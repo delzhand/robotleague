@@ -1,0 +1,410 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.scrollto@2.1.3/jquery.scrollTo.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+<script>
+  const fieldSize = 12;
+  const totalRounds = 5;
+  const balls = 3;
+
+  const league = {}
+  league['Shufio-bawa'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
+  league['Ronesho-migu'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
+  league['U-wetatso'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
+  league['Ni-haki'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
+  league['Pa-ene'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
+  league['Seige'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
+  league['Bazahe'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
+  league['Woduvishudo'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
+  league['Tsunatere'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
+  league['Dudejawa'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
+
+  const input = {
+    teams: [
+      {
+        name: 'Adaptive Prototype Wavelengths',
+        shortName: 'Wavelengths',
+        direction: 'left',
+        players: [
+          {name: 'Shufio-bawa', position: 0, hasBall: false, out: false},
+          {name: 'Ronesho-migu', position: 0, hasBall: false, out: false},
+          {name: 'U-wetatso', position: 0, hasBall: false, out: false},
+        ],
+        reserve: 'Ni-haki'
+      },
+      {
+        name: 'Hyperion Meridian Irregulars',
+        shortName: "Irregulars",
+        direction: 'right',
+        players: [
+          {name: 'Seige', position: 0, hasBall: false, out: false},
+          {name: 'Bazahe', position: 0, hasBall: false, out: false},
+          {name: 'Woduvishudo', position: 0, hasBall: false, out: false},
+        ],
+        reserve: 'Tsunatere'
+      }
+    ]
+  }
+
+  function getTrueRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+
+  function getSeedRandomInt(max) {
+    return Math.floor(seededRandom() * max);
+  }
+
+  function getSeedRandomBool() {
+    return (Math.floor(seededRandom() * 2)) === 0;
+  }
+
+  function getDiceRoll() {
+    return getSeedRandomInt(6)+1;
+  }
+
+  function getSuccesses(count, threshold) {
+    let successes = 0;
+    for (let i = 0; i < count; i++) {
+      const roll = getDiceRoll();
+      if (roll > threshold) {
+        successes++;
+      }
+    }
+    return successes;
+  }
+
+  function logMessage(m, c) {
+    $('#log').append(`<div class="${c}">${m}</div>`);
+  }
+
+  function roundText() {
+    if (round > totalRounds) {
+      return 'Sudden Death';
+    }
+    return `Round ${round}`;
+  }
+
+  function tossUp() {
+    $('.round').html(`${roundText()} - Tossup`);
+    let bigBall = true;
+    let totalUnits = 0;
+    for(let i = 0; i < input.teams.length; i++) {
+      totalUnits += input.teams[i].players.length;
+    }
+    const grabs = [];
+    while (grabs.length < balls) {
+      const i = getSeedRandomInt(totalUnits);
+      if (grabs.indexOf(i) === -1) {
+        grabs.push(i);
+      }
+    }
+    let unitIndex = 0;
+    for(let i = 0; i < input.teams.length; i++) {
+      for(let j = 0; j < input.teams[i].players.length; j++) {
+        const unit = input.teams[i].players[j];        
+        unit.hasBall = false;
+        unit.hasBigBall = false;
+        $(`.${unit.name}`).removeClass('has-ball');
+        $(`.${unit.name}`).removeClass('has-big-ball');
+
+        if (grabs.indexOf(unitIndex) !== -1) {
+          unit.hasBall = true;
+          $(`.${unit.name}`).addClass('has-ball');
+          if (bigBall) {
+            unit.hasBigBall = true;
+            $(`.${unit.name}`).addClass('has-big-ball');
+            bigBall = false;
+            logMessage(`${unit.name} grabs the sinker.`);
+          }
+          else {
+            logMessage(`${unit.name} grabs a skimmer.`);
+          }
+        }
+        unitIndex++;
+      }
+    }    
+  }
+
+  function scramble() {
+    $('.round').html(`${roundText()} - Scramble`);
+    for(let i = 0; i < input.teams.length; i++) {
+      for(let j = 0; j < input.teams[i].players.length; j++) {
+        const unit = input.teams[i].players[j];
+        move(unit, input.teams[i].direction);
+      }
+    }
+    logMessage("The players scramble for position.");
+  }
+
+  function move(unit, direction) {
+    const movement = getSuccesses(league[unit.name].speed, 3) + 1;
+    unit.position += movement;
+    if (unit.position > fieldSize) {
+      unit.position = fieldSize;
+    }
+    const posPercent = unit.position / fieldSize * 100;
+    $(`.${unit.name}`).css(direction, posPercent + '%');
+  }
+
+  function rumble() {
+    $('.round').html(`${roundText()} - Rumble`);
+  }
+
+  function shootout() {
+    $('.round').html(`${roundText()} - Shootout`);
+  }
+
+  function gameOver() {
+    $('#next-button').attr('disabled', 'disabled').addClass('disabled');
+  }
+
+  function init() {
+    for(let i = 1; i < fieldSize; i++) {
+      $('#field').append(`<div class="marker home" style="left: ${i/fieldSize*100}%">${i}</div>`);
+      $('#field').append(`<div class="marker away" style="left: ${100 - (i/fieldSize*100)}%">${i}</div>`);
+    }
+    for(let i = 0; i < input.teams.length; i++) {
+      for(let j = 0; j < input.teams[i].players.length; j++) {
+        const unit = input.teams[i].players[j];
+        $('#field').append(`<div class="unit unit-${j} team-${i} ${unit.name}">${j + 1}<div class="name">${unit.name}</div></div>`);
+      }
+    }
+    $('#field').append(`<div class="team-name home">${input.teams[0].shortName}</div>`);
+    $('#field').append(`<div class="team-name away">${input.teams[1].shortName}</div>`);
+  }
+
+  let round = 1;
+  let phase = 'tossUp';
+  let homeScore = 0;
+  let awayScore = 0;
+  function next() {
+    switch (phase) {
+      case 'tossUp':
+        logMessage(`Round ${round}`, "round-start");
+        tossUp();
+        phase = 'scramble';
+        break;
+      case 'scramble':
+        scramble();
+        phase = 'rumble';
+        break;
+      case 'rumble':
+        rumble();
+        phase = 'shootout';
+        break;
+      case 'shootout':
+        shootout();
+        if (round >= totalRounds && homeScore != awayScore) {
+          gameOver();
+        }
+        else {
+          phase = 'tossUp';
+          round++;
+        }
+        break;
+    }
+  }
+
+</script>
+<style>
+  #field {
+    margin-top: 200px;
+    height: 3px;
+    background-color: rgb(59, 117, 79);
+    width: 100%;
+    position: relative;
+    margin-bottom: 100px;
+  }
+  .round,
+  .score {
+    margin-top: 2em;
+    padding: 4px 8px;
+    background: rgb(66, 66, 66);
+    color: #FFF;
+    border-radius: 2px;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .round {
+    float: left;
+  }
+  .score {
+    float: right;
+  }
+  .team-name {
+    background: rgb(219, 69, 49);
+    padding: 4px 8px;
+    color: #FFF;
+    border-radius: 2px;
+    display: inline-block;
+    position: absolute;
+    right: 100%;
+    top: 30px;
+  }
+  .team-name.away {
+    background-color: rgb(49, 117, 219);
+    left: 100%;
+    right: auto;
+    top: auto;
+    bottom: 30px;
+  }
+  .goal {
+    background: rgb(59, 117, 79);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 3px;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    border: 3px solid gold;
+  }
+  .goal-a {
+    left: 0px;
+  }
+  .goal-b {
+    right: 0px;
+    transform: translate(50%, -50%);
+  }
+  .marker {
+    position: absolute;
+    transform: translateX(-50%);
+    background:rgb(66, 66, 66);
+    color: #FFF;
+    top: 0;
+    width: 20px;
+    text-align: center;
+  }
+  .marker.away {
+    bottom: 0;
+    top: auto;
+  }
+  .unit {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    height: 20px;
+    width: 20px;
+    color: #FFF;
+    background: rgb(66, 66, 66);
+    border: 3px solid white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 15px;
+    transition-duration: 1s;
+  }
+  .unit .name {
+    background: #000;
+    padding: 2px 4px;
+    color: #FFF;
+    border-radius: 2px;
+    position: absolute;
+    display: inline-block;
+    bottom: 17px;
+    left: 3;
+    transform-origin: center left;
+    transform: rotateZ(-45deg);
+    white-space: nowrap;
+  }
+  .unit.has-ball .name {
+    background-color: rgb(228, 162, 39)
+  }
+  .unit.has-big-ball .name {
+    background-color: rgb(137, 39, 228)
+  }
+  .team-1 .name {
+    transform: rotateZ(45deg);
+  }
+  .team-0.unit-1 .name {
+    bottom: 45px;
+  }
+  .team-0.unit-2 .name {
+    bottom: 73px;
+  }
+  .team-1.unit-0 .name {
+    bottom: -17px;
+  }
+  .team-1.unit-1 .name {
+    bottom: -45px;
+  }
+  .team-1.unit-2 .name {
+    bottom: -73px;
+  }
+
+  .team-0 {
+    border-color: rgb(219, 69, 49);
+    top: -30px;
+    left: 0;
+  }
+  .team-1 {
+    transform: translate(50%, -50%);
+    border-color: rgb(49, 117, 219);
+    bottom: -50px;
+    right: 0;
+  }
+  #output {
+    margin-top: 12em;
+  }
+  .log-frame {
+    border: 2px solid black;
+    border-radius: 3px;
+    position: relative;    
+    height: 300px;
+    padding: 15px;
+    overflow: hidden;
+  }
+  .log-label {
+    text-transform: uppercase;
+    font-weight: bold;
+    position: absolute;
+    bottom: -5px;
+    right: 0px;
+  }
+  .log-inner {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }
+  .round-start {
+    font-weight: bold;
+  }
+</style>
+<title>Robot League Matchup Visualizer</title>
+</head>
+<body>
+
+<div class="container">
+  <div id="scoreboard" class="clearfix">
+    <div class="round">Pre-game</div>
+    <div class="score">Home: <span class="home-score">0</span> | Away: <span class="away-score">0</span></div>
+  </div>
+
+  <div id="field">
+    <div class="goal goal-a"></div>
+    <div class="goal goal-b"></div>
+  </div>
+
+  <div id="output" class="row">
+    <div class="col col-11">
+      <div class="log-frame">
+        <div class="log-label">Log</div>
+        <div id="log" class="log-inner"></div>
+      </div>    
+    </div>
+    <div class="col col-1">
+      <a id="next-button" class="btn btn-primary" onclick="next()">Next</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  seededRandom = new Math.seedrandom('seed1');
+  init();
+</script>
+</body>
+<html>

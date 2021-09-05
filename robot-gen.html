@@ -1,0 +1,193 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.scrollto@2.1.3/jquery.scrollTo.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+<script>
+  const phonemes = [
+  'a',
+    'e',
+    'i',
+    'o',
+    'u',
+    'n',
+    'ba',
+    'be',
+    'bi',
+    'bo',
+    'bu',
+    'da',
+    'de',
+    'di',
+    'do',
+    'du',
+    'fa',
+    'fe',
+    'fi',
+    'fo',
+    'fu',
+    'ga',
+    'ge',
+    'gi',
+    'go',
+    'gu',
+    'ha',
+    'he',
+    'hi',
+    'ho',
+    'hu',
+    'ja',
+    'je',
+    'ji',
+    'jo',
+    'ju',
+    'ka',
+    'ke',
+    'ki',
+    'ko',
+    'ku',
+    'sha',
+    'she',
+    'shi',
+    'sho',
+    'shu',
+    'ma',
+    'me',
+    'mi',
+    'mo',
+    'mu',
+    'na',
+    'ne',
+    'ni',
+    'no',
+    'nu',
+    'pa',
+    'pe',
+    'pi',
+    'po',
+    'pu',
+    'ra',
+    're',
+    'ri',
+    'ro',
+    'ru',
+    'sa',
+    'se',
+    'si',
+    'so',
+    'su',
+    'ta',
+    'te',
+    'ti',
+    'to',
+    'tu',
+    'tsa',
+    'tse',
+    'tsi',
+    'tso',
+    'tsu',
+    'va',
+    've',
+    'vi',
+    'vo',
+    'vu',
+    'wa',
+    'we',
+    'wi',
+    'wo',
+    'wu',
+    'za',
+    'ze',
+    'zi',
+    'zo',
+    'zu',
+  ];
+
+  function getTrueRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+
+  function getSeedRandomInt(max) {
+    return Math.floor(seededRandom() * max);
+  }
+
+  function generateNames() {
+    const names = [];
+    for (let i = 0; i < 20; i++) {
+      let name = '';
+      let length = getTrueRandomInt(3) + 3;
+      let hyphenPosition = getTrueRandomInt(length - 1) - 1;
+
+      for (let j = 0; j < length; j++) {
+        name += phonemes[getTrueRandomInt(phonemes.length - 1)];
+        if (j === hyphenPosition) {
+          name += '-';
+        }
+      }
+      names.push(name);
+    }
+    return names;
+  }
+
+  function generate(name) {
+    seededRandom = new Math.seedrandom(name);
+    headHeight = getSeedRandomInt(100) + 100;
+    headWidth = getSeedRandomInt(50) + 150;
+    browHeight = getSeedRandomInt(headHeight - 25 - 20);
+    browLength = 50;
+    hornAttachHeight = 75;
+    hornBaseShape = 'square';
+    color = 'rgb(' + (getSeedRandomInt(100)+100) + ', ' + (getSeedRandomInt(100)+100) + ', ' + (getSeedRandomInt(100)+100) + ')';
+
+    $('#robots').append(`<div class="robot-${name}"></div>`);
+    $el = $(`.robot-${name}`);
+    $el.append(`<div class="head"></div><div class="label">${name}</div>`);
+    $el.find('.head').css('height', headHeight + 'px');
+    $el.find('.head').css('width', headWidth/2 + 'px');
+    $el.find('.head').css('background-color', color);
+    $el.find('.head').append('<div class="eye"></div>');
+    $el.find('.eye').css('top', (browHeight + 20) + 'px');
+  }
+
+</script>
+<style>
+  .head {
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+    border-right: 2px solid black;
+    position: relative;
+    overflow: hidden;
+  }
+  .eye {
+    position: absolute;
+    background-color: rgb(255, 255, 200);
+    right: 50%;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    z-index: 1;
+  }
+</style>
+<title>Robot Generator</title>
+
+</head>
+<body>
+
+<div class="container">
+  <div id="robots"></div>
+</div>
+
+<script>
+  const names = generateNames();
+  for(let i = 0; i < names.length; i++) {
+    generate(names[i]);
+  }
+
+</script>
+</body>
+<html>
