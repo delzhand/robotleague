@@ -381,7 +381,8 @@
         break;
       case 'shootout':
         shootout();
-        if (game.round >= game.totalRounds && game.homeScore != game.awayScore) {
+        console.log([game.round, game.totalRounds, game.homeScore, game.awayScore]);
+        if (game.round >= input.totalRounds && game.homeScore != game.awayScore) {
           gameOver();
         }
         else {
