@@ -8,6 +8,8 @@
   crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery.scrollto@2.1.3/jquery.scrollTo.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+<script src="./players.js"></script>
+
 <script>
   const input = {
     randomSeed: 'test',
@@ -28,19 +30,6 @@
     }
   };
 
-  const players = {
-    'U-wetatso': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
-    'Tsa-huro': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
-    'Mosadatsi': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
-    'Disintu': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
-    'Sha-ea': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
-    'Error: Divide By Zero': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
-    'An Exception Has Occurred': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
-    'Landing Gear Damaged': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
-    'Could Not Locate "Name"': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
-    'Core Dump': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
-  };
-
   const game = {
     round: 1,
     phase: 'tossUp',
@@ -54,6 +43,8 @@
     homeReserve: [],
     awayTeam: [],
     awayReserve: [],
+    homeSub: true,
+    awaySub: true,
   };
 
   function getRandomInt(max) {
@@ -131,26 +122,32 @@
   }
 
   function getAllPlayers() {
-    
     return game.homeTeam.concat(game.awayTeam);
+  }
+  
+  function getAllActivePlayers() {
+    let allPlayers = shuffle(getAllPlayers());
+    const active = [];
+    for(let i = 0; i < allPlayers.length; i++) {
+      if (!allPlayers[i].out) {
+        active.push(allPlayers[i]);
+      }
+    }
+    return active;
   }
 
   function tossUp() {
     $('.round').html(`${roundText()} - Tossup`);
     let bigBalls = game.bigBalls;
-    let totalUnits = game.homeTeam.length + game.awayTeam.length;
-    const grabs = [];
-    while (grabs.length < game.balls) {
-      const i = getRandomInt(totalUnits);
-      if (grabs.indexOf(i) === -1) {
-        grabs.push(i);
-      }
-    }
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
       loseBall(unit);
-      if (grabs.indexOf(i) !== -1) {
+    }
+    let activePlayers = shuffle(getAllActivePlayers());
+    for(let i = 0; i < input.balls; i++) {
+      const unit = activePlayers[i];
+      if (!unit.out) {
         if (bigBalls > 0) {
           bigBalls--;
           gainBigBall(unit);
@@ -188,7 +185,9 @@
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
-      move(unit);
+      if (!unit.out) {
+        move(unit);
+      }
     }
     logMessage("The players scramble for position.");
   }
@@ -235,7 +234,7 @@
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
-      if (unit.hasBall) {
+      if (!unit.out && unit.hasBall) {
         shoot(unit);
       }
     }
@@ -247,13 +246,15 @@
     targets.push({type: 'goal', distance: input.fieldSize - unit.position});
     const oppose = (unit.team === 'home') ? game.awayTeam : game.homeTeam;
     for (let i = 0; i < oppose.length; i++) {
-      const reverseDistance = (input.fieldSize - oppose[i].position);
-      const distance = reverseDistance - unit.position;
-      if (distance === 0) {
-        scuffle = oppose[i];
-      }
-      if (distance > 0) {
-        targets.push({type: 'opponent', distance, unit: oppose[i]});
+      if (!oppose[i].out) {
+        const reverseDistance = (input.fieldSize - oppose[i].position);
+        const distance = reverseDistance - unit.position;
+        if (distance === 0) {
+          scuffle = oppose[i];
+        }
+        if (distance > 0) {
+          targets.push({type: 'opponent', distance, unit: oppose[i]});
+        }
       }
     }
     if (scuffle) {
@@ -264,7 +265,6 @@
     const target = targets[getRandomInt(targets.length)];
     const hit = makeShot(target.distance, unit.accuracy);
     if (target.type === 'goal') {
-      logMessage(`<b class="${unit.team}">${unit.name}</b> shoots for the goal.`);
       if (hit && unit.hasBigBall) {
         logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the sinker for 3 points.`);
         updateScore(unit.team, 3);
@@ -273,28 +273,50 @@
         logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the skimmer for 1 point.`);
         updateScore(unit.team, 1);
       }
+      else if (unit.hasBigBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with the sinker.`);
+      }
       else {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> missed.`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with a skimmer.`);
       }
     }
     else {
-      logMessage(`<b class="${unit.team}">${unit.name}</b> shoots at <b class="${target.unit.team}">${target.unit.name}</b>.`);
       if (hit && unit.hasBigBall) {
         logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with the sinker.`);
         target.unit.cStability -= 2;
+        if (target.unit.cStability <= 0) {
+          // target.unit.position = 0;
+          // target.unit.out += 1 + -target.unit.cStability;
+          // logMessage(`<b class="${target.unit.team}">${target.unit.name}</b> was knocked out for ${target.unit.out + 1} turns.`);
+          loseBall(target.unit);
+        }
         updateStability(target.unit);
-        target.unit.position = Math.max(target.unit.position - 2, 0);
+        if (!target.unit.out) {
+          target.unit.position = Math.max(target.unit.position - 2, 0);
+        }
         updatePosition(target.unit);
       }
       else if (hit) {
         logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with a skimmer.`);
         target.unit.cStability -= 1;
+        if (target.unit.cStability <= 0) {
+          // target.unit.position = 0;
+          // target.unit.out += 1 + -target.unit.cStability;
+          // console.log(target.unit.out);
+          // logMessage(`<b class="${target.unit.team}">${target.unit.name}</b> was knocked out for ${target.unit.out + 1} turns.`);
+          loseBall(target.unit);
+        }
         updateStability(target.unit);
-        target.unit.position = Math.max(target.unit.position - 1, 0);
+        if (!target.unit.out) {
+          target.unit.position = Math.max(target.unit.position - 1, 0);
+        }
         updatePosition(target.unit);
       }
+      else if (unit.hasBigBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with the sinker.`);
+      }
       else {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b>.`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with a skimmer.`);
       }
     }
     loseBall(unit);
@@ -302,11 +324,57 @@
 
   function makeShot(distance, accuracy) {
     const successes = getSuccesses(accuracy);
-    return true;
+    let modifiedDistance = distance - successes;
+    let hitRate = .1 + (.8 * (1 - (modifiedDistance/input.fieldSize)));
+    hitRate *= 100;
+    return getRandomInt(100) >= hitRate;
+  }
+
+  function checkOuts() {
+    let allPlayers = getAllPlayers();
+    for(let i = 0; i < allPlayers.length; i++) {
+      const unit = allPlayers[i];
+      if (unit.out === 1) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> is no longer out.`);
+      }
+      if (unit.out > 0) {
+        unit.out--;
+      }
+    }
   }
 
   function checkSubs() {
-
+    let allPlayers = getAllPlayers();
+    for(let i = 0; i < allPlayers.length; i++) {
+      const unit = allPlayers[i];
+      if (unit.cStability <= -1) {
+        if (unit.team === 'home' && game.homeSub) {
+          game.homeSub = false;
+          const sub = game.homeReserve[0];
+          const teamPosition = game.homeTeam.indexOf(unit);
+          game.homeTeam[teamPosition] = sub;
+          game.homeReserve.push(unit);
+          $(`.${sub.name.safeCSS()}`).removeClass('bench').removeClass('unit-0').addClass(`unit-${teamPosition}`);
+          $(`.${unit.name.safeCSS()}`).addClass('bench').addClass('unit-0').removeClass(`unit-${teamPosition}`).css('left', '');
+          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>`);
+          console.log(game.homeTeam);
+        }
+        else if (unit.team === 'away' && game.awaySub) {
+          game.awaySub = false;
+          const sub = game.awayReserve[0];
+          const teamPosition = game.awayTeam.indexOf(unit);
+          game.awayTeam[teamPosition] = sub;
+          game.awayReserve.push(unit);
+          $(`.${sub.name.safeCSS()}`).removeClass('bench').removeClass('unit-0').addClass(`unit-${teamPosition}`);
+          $(`.${unit.name.safeCSS()}`).addClass('bench').addClass('unit-0').removeClass(`unit-${teamPosition}`).css('right', '');
+          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>`);
+          console.log(game.awayTeam);
+        }
+        else {
+          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. No sub allowed.`);
+        }
+      }
+    }
   }
 
   function updateScore(team, points) {
@@ -322,7 +390,8 @@
   }
 
   function gameOver() {
-    $('#next-button').attr('disabled', 'disabled').addClass('disabled');
+    $('.round').html('Post-game');
+    $('#next-button').remove();
   }
 
   function init() {
@@ -358,14 +427,15 @@
     $('#field').append(`<div class="team-name home">${input.home.name}</div>`);
     $('#field').append(`<div class="team-name away">${input.away.name}</div>`);
     for(let i = 1; i < input.fieldSize; i++) {
-      $('#field').append(`<div class="marker home" style="left: ${i/input.fieldSize*100}%">${i}</div>`);
-      $('#field').append(`<div class="marker away" style="left: ${100 - (i/input.fieldSize*100)}%">${i}</div>`);
+      $('#field').append(`<div class="marker away" style="left: ${i/input.fieldSize*100}%">${i}</div>`);
+      $('#field').append(`<div class="marker home" style="left: ${100 - (i/input.fieldSize*100)}%">${i}</div>`);
     }
   }
 
   function next() {
     switch (game.phase) {
       case 'tossUp':
+        checkOuts();
         checkSubs();
         logMessage(`Round ${game.round}`, "round-start");
         tossUp();
@@ -373,15 +443,15 @@
         break;
       case 'scramble':
         scramble();
-        game.phase = 'rumble';
-        break;
-      case 'rumble':
-        rumble();
+        // game.phase = 'rumble';
         game.phase = 'shootout';
         break;
+      // case 'rumble':
+      //   rumble();
+      //   game.phase = 'shootout';
+      //   break;
       case 'shootout':
         shootout();
-        console.log([game.round, game.totalRounds, game.homeScore, game.awayScore]);
         if (game.round >= input.totalRounds && game.homeScore != game.awayScore) {
           gameOver();
         }
@@ -396,15 +466,16 @@
 </script>
 <style>
   body {
-    overflow: hidden;
+    overflow-x: hidden;
   }
   #field {
-    margin-top: 200px;
+    margin-top: 140px;
     height: 3px;
     background-color: rgb(59, 117, 79);
     width: 100%;
     position: relative;
     margin-bottom: 100px;
+    z-index: 2;
   }
   .round,
   .score {
@@ -505,9 +576,19 @@
     bottom: 17px;
     left: 3;
     transform-origin: center left;
-    transform: rotateZ(-45deg);
+    /* transform: rotateZ(-45deg); */
     white-space: nowrap;
     vertical-align: middle;
+  }
+  .unit .name:before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 100px;
+    left: 0;
+    top: 4px;
+    background: black;
+    z-index: -1;
   }
   .unit .name .stability {
     display: inline-block;
@@ -538,23 +619,45 @@
     right: -65px;
     left: auto;
   }
-  .team-away .name {
-    transform: rotateZ(45deg);
+  .team-home.unit-0 .name {
+    bottom: 20px;
+  }
+  .team-home.unit-0 .name:before {
+    height: 20px;
   }
   .team-home.unit-1 .name {
     bottom: 45px;
   }
+  .team-home.unit-1 .name:before {
+    height: 45px;
+  }
   .team-home.unit-2 .name {
-    bottom: 73px;
+    bottom: 69px;
+  }
+  .team-home.unit-2 .name:before {
+    height: 69px;
+  }
+  .team-away .name:before {
+    top: auto;
+    bottom: 0;
   }
   .team-away.unit-0 .name {
-    bottom: -17px;
+    bottom: -25px;
+  }
+  .team-away.unit-0 .name:before {
+    height: 25px;
   }
   .team-away.unit-1 .name {
-    bottom: -45px;
+    bottom: -50px;
+  }
+  .team-away.unit-1 .name:before {
+    height: 50px;
   }
   .team-away.unit-2 .name {
-    bottom: -73px;
+    bottom: -74px;
+  }
+  .team-away.unit-2 .name:before {
+    height: 74px;
   }
 
   .team-home {
@@ -568,11 +671,8 @@
     bottom: -50px;
     right: 0;
   }
-  #next-button {
-    margin-top: 10em;
-  }
   #output {
-    margin-top: 12em;
+    margin-top: 10em;
   }
   .log-frame {
     border: 2px solid black;
@@ -597,6 +697,9 @@
   .round-start {
     font-weight: bold;
   }
+  #next-button {
+    margin-top: 1em;
+  }
 </style>
 <title>Robot League Matchup Visualizer</title>
 </head>
@@ -613,17 +716,11 @@
     <div class="goal goal-b"></div>
   </div>
 
-  <div id="output" class="row">
-    <div class="col col-11">
-      <div class="log-frame">
-        <div class="log-label">Log</div>
-        <div id="log" class="log-inner"></div>
-      </div>    
-    </div>
-    <div class="col col-1">
-      <a id="next-button" class="btn btn-primary" onclick="next()">Next</a>
-    </div>
-  </div>
+  <div id="output" class="log-frame">
+    <div class="log-label">Log</div>
+    <div id="log" class="log-inner"></div>
+  </div>    
+  <a id="next-button" class="btn btn-primary" onclick="next()">Next</a>
 </div>
 
 <script>
