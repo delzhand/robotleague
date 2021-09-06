@@ -9,63 +9,63 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery.scrollto@2.1.3/jquery.scrollTo.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
 <script>
-  const fieldSize = 12;
-  const totalRounds = 5;
-  const balls = 3;
-
-  const league = {}
-  league['Shufio-bawa'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
-  league['Ronesho-migu'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
-  league['U-wetatso'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
-  league['Ni-haki'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
-  league['Pa-ene'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
-  league['Seige'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
-  league['Bazahe'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
-  league['Woduvishudo'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
-  league['Tsunatere'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
-  league['Dudejawa'] = {stability: 3, accuracy: 3, speed: 3, skill: 3, persona: 'standard'};
-
   const input = {
-    teams: [
-      {
-        name: 'Adaptive Prototype Wavelengths',
-        shortName: 'Wavelengths',
-        direction: 'left',
-        players: [
-          {name: 'Shufio-bawa', position: 0, hasBall: false, out: false},
-          {name: 'Ronesho-migu', position: 0, hasBall: false, out: false},
-          {name: 'U-wetatso', position: 0, hasBall: false, out: false},
-        ],
-        reserve: 'Ni-haki'
-      },
-      {
-        name: 'Hyperion Meridian Irregulars',
-        shortName: "Irregulars",
-        direction: 'right',
-        players: [
-          {name: 'Seige', position: 0, hasBall: false, out: false},
-          {name: 'Bazahe', position: 0, hasBall: false, out: false},
-          {name: 'Woduvishudo', position: 0, hasBall: false, out: false},
-        ],
-        reserve: 'Tsunatere'
-      }
-    ]
+    randomSeed: 'test',
+    fieldSize: 12,
+    totalRounds: 5,
+    balls: 3,
+    bigBalls: 1,
+    fieldProperties: ['flooded', 'low visibility'],
+    home: {
+      name: 'Wavelengths',
+      players: ['U-wetatso', 'Tsa-huro', 'Mosadatsi'],
+      bench: ['Disintu', 'Sha-ea']
+    },
+    away: {
+      name: 'Irregulars',
+      players: ['Error: Divide By Zero', 'An Exception Has Occurred', 'Landing Gear Damaged'],
+      bench: ['Could Not Locate "Name"', 'Core Dump']
+    }
+  };
+
+  const players = {
+    'U-wetatso': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
+    'Tsa-huro': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
+    'Mosadatsi': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
+    'Disintu': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
+    'Sha-ea': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
+    'Error: Divide By Zero': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
+    'An Exception Has Occurred': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
+    'Landing Gear Damaged': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
+    'Could Not Locate "Name"': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
+    'Core Dump': {stability: 3, accuracy: 3, speed: 3, skill: 3, talent: 'none'},
+  };
+
+  const game = {
+    round: 1,
+    phase: 'tossUp',
+    fieldProperties: input.fieldProperties,
+    balls: input.balls,
+    bigBalls: input.bigBalls,
+    homeScore: 0,
+    awayScore: 0,    
+    rand: new Math.seedrandom(input.randomSeed),
+    homeTeam: [],
+    homeReserve: [],
+    awayTeam: [],
+    awayReserve: [],
+  };
+
+  function getRandomInt(max) {
+    return Math.floor(game.rand() * max);
   }
 
-  function getTrueRandomInt(max) {
-    return Math.floor(Math.random() * max);
-  }
-
-  function getSeedRandomInt(max) {
-    return Math.floor(seededRandom() * max);
-  }
-
-  function getSeedRandomBool() {
-    return (Math.floor(seededRandom() * 2)) === 0;
+  function getCoinFlip() {
+    return (Math.floor(game.rand() * 2)) === 0;
   }
 
   function getDiceRoll() {
-    return getSeedRandomInt(6)+1;
+    return getRandomInt(6)+1;
   }
 
   function getSuccesses(count, threshold) {
@@ -79,77 +79,121 @@
     return successes;
   }
 
+  function shuffle(array) {
+    let currentIndex = array.length,  randomIndex;
+    while (0 !== currentIndex) {
+      randomIndex = getRandomInt(currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    return array;
+  }
+
+  String.prototype.safeCSS = function() {
+    return encodeURIComponent(this)
+      .toLowerCase()
+      .replace(/\.|%[0-9a-z]{2}/gi, '');
+  }
+
   function logMessage(m, c) {
-    $('#log').append(`<div class="${c}">${m}</div>`);
+    if (c) {
+      $('#log').append(`<div class="${c}">${m}</div>`);
+    }
+    else {
+      $('#log').append(`<div>${m}</div>`);
+    }
+  }
+
+  function sortie(name, team) {
+    const player = {
+      name,
+      team,
+      cStability: players[name].stability,
+      mStability: players[name].stability,
+      accuracy: players[name].accuracy,
+      skill: players[name].skill,
+      speed: players[name].speed,
+      talent: players[name].talent,
+      hasBall: false,
+      hasBigBall: false,
+      out: 0,
+      position: 0,
+    }
+    return player;
   }
 
   function roundText() {
-    if (round > totalRounds) {
+    if (game.round > input.totalRounds) {
       return 'Sudden Death';
     }
-    return `Round ${round}`;
+    return `Round ${game.round}`;
+  }
+
+  function getAllPlayers() {
+    
+    return game.homeTeam.concat(game.awayTeam);
   }
 
   function tossUp() {
     $('.round').html(`${roundText()} - Tossup`);
-    let bigBall = true;
-    let totalUnits = 0;
-    for(let i = 0; i < input.teams.length; i++) {
-      totalUnits += input.teams[i].players.length;
-    }
+    let bigBalls = game.bigBalls;
+    let totalUnits = game.homeTeam.length + game.awayTeam.length;
     const grabs = [];
-    while (grabs.length < balls) {
-      const i = getSeedRandomInt(totalUnits);
+    while (grabs.length < game.balls) {
+      const i = getRandomInt(totalUnits);
       if (grabs.indexOf(i) === -1) {
         grabs.push(i);
       }
     }
-    let unitIndex = 0;
-    for(let i = 0; i < input.teams.length; i++) {
-      for(let j = 0; j < input.teams[i].players.length; j++) {
-        const unit = input.teams[i].players[j];        
-        unit.hasBall = false;
-        unit.hasBigBall = false;
-        $(`.${unit.name}`).removeClass('has-ball');
-        $(`.${unit.name}`).removeClass('has-big-ball');
-
-        if (grabs.indexOf(unitIndex) !== -1) {
-          unit.hasBall = true;
-          $(`.${unit.name}`).addClass('has-ball');
-          if (bigBall) {
-            unit.hasBigBall = true;
-            $(`.${unit.name}`).addClass('has-big-ball');
-            bigBall = false;
-            logMessage(`${unit.name} grabs the sinker.`);
-          }
-          else {
-            logMessage(`${unit.name} grabs a skimmer.`);
-          }
+    let allPlayers = shuffle(getAllPlayers());
+    for(let i = 0; i < allPlayers.length; i++) {
+      const unit = allPlayers[i];
+      unit.hasBall = false;
+      unit.hasBigBall = false;
+      $(`.${unit.name.safeCSS()}`).removeClass('has-ball');
+      $(`.${unit.name.safeCSS()}`).removeClass('has-big-ball');
+      if (grabs.indexOf(i) !== -1) {
+        unit.hasBall = true;
+        $(`.${unit.name.safeCSS()}`).addClass('has-ball');
+        if (bigBalls > 0) {
+          unit.hasBigBall = true;
+          $(`.${unit.name.safeCSS()}`).addClass('has-big-ball');
+          bigBalls--;
+          logMessage(`<b class="${unit.team}">${unit.name}</b> grabs the sinker.`);
         }
-        unitIndex++;
+        else {
+          logMessage(`<b class="${unit.team}">${unit.name}</b> grabs a skimmer.`);
+        }
       }
-    }    
+    }
   }
 
   function scramble() {
     $('.round').html(`${roundText()} - Scramble`);
-    for(let i = 0; i < input.teams.length; i++) {
-      for(let j = 0; j < input.teams[i].players.length; j++) {
-        const unit = input.teams[i].players[j];
-        move(unit, input.teams[i].direction);
-      }
+    let allPlayers = shuffle(getAllPlayers());
+    for(let i = 0; i < allPlayers.length; i++) {
+      const unit = allPlayers[i];
+      move(unit);
     }
     logMessage("The players scramble for position.");
   }
 
-  function move(unit, direction) {
-    const movement = getSuccesses(league[unit.name].speed, 3) + 1;
+  function move(unit) {
+    const movement = getSuccesses(unit.speed, 3) + 1;
     unit.position += movement;
-    if (unit.position > fieldSize) {
-      unit.position = fieldSize;
+    if (unit.position >= input.fieldSize) {
+      unit.position = 0;
+      unit.out = 1;
+      logMessage(`<b class="${unit.team}">${unit.name}</b> overshot the endzone. Out for ${unit.out} rounds.`);
     }
-    const posPercent = unit.position / fieldSize * 100;
-    $(`.${unit.name}`).css(direction, posPercent + '%');
+    updatePosition(unit);
+  }
+
+  function updatePosition(unit) {
+    const posPercent = unit.position / input.fieldSize * 100;
+    const direction = (unit.team === 'home') ? 'left' : 'right';
+    $(`.${unit.name.safeCSS()}`).css(direction, posPercent + '%');
   }
 
   function rumble() {
@@ -158,6 +202,88 @@
 
   function shootout() {
     $('.round').html(`${roundText()} - Shootout`);
+    let allPlayers = shuffle(getAllPlayers());
+    for(let i = 0; i < allPlayers.length; i++) {
+      const unit = allPlayers[i];
+      if (unit.hasBall) {
+        shoot(unit);
+      }
+    }
+  }
+
+  function shoot(unit) {
+    let scuffle = false;
+    const targets = [];
+    targets.push({type: 'goal', distance: input.fieldSize - unit.position});
+    const oppose = (unit.team === 'home') ? game.awayTeam : game.homeTeam;
+    for (let i = 0; i < oppose.length; i++) {
+      const reverseDistance = (input.fieldSize - oppose[i].position);
+      const distance = reverseDistance - unit.position;
+      if (distance === 0) {
+        scuffle = oppose[i];
+      }
+      targets.push({type: 'opponent', distance, unit: oppose[i]});
+    }
+    if (scuffle) {
+      logMessage(`<b class="${unit.team}">${unit.name}</b> is in a scuffle with <b class="${scuffle.team}">${scuffle.name}</b> and can't shoot.`);
+      return false;
+    }
+
+    const target = targets[getRandomInt(targets.length)];
+    const hit = makeShot(target.distance, unit.accuracy);
+    if (target.type === 'goal') {
+      logMessage(`<b class="${unit.team}">${unit.name}</b> shoots for the goal.`);
+      if (hit && unit.hasBigBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the sinker for 3 points.`);
+        updateScore(unit.team, 3);
+      }
+      else if (hit) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the skimmer for 1 point.`);
+        updateScore(unit.team, 1);
+      }
+      else {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed.`);
+      }
+    }
+    else {
+      logMessage(`<b class="${unit.team}">${unit.name}</b> shoots at <b class="${target.unit.team}">${target.unit.name}</b>.`);
+      if (hit && unit.hasBigBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with the sinker.`);
+        target.unit.stability -= 2;
+        target.unit.position -= 2;
+        updatePosition(target.unit);
+      }
+      else if (hit) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with a skimmer.`);
+        target.unit.stability -= 1;
+        target.unit.position -= 1;
+        updatePosition(target.unit);
+      }
+      else {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b>.`);
+      }
+    }
+  }
+
+  function makeShot(distance, accuracy) {
+    const successes = getSuccesses(accuracy);
+    return true;
+  }
+
+  function checkSubs() {
+
+  }
+
+  function updateScore(team, points) {
+    if (team === 'home') {
+      game.homeScore += points;
+      $('.home-score').html(game.homeScore);
+    }
+    else {
+      game.awayScore += points;
+      $('.away-score').html(game.awayScore);
+    };
+
   }
 
   function gameOver() {
@@ -165,47 +291,67 @@
   }
 
   function init() {
-    for(let i = 1; i < fieldSize; i++) {
-      $('#field').append(`<div class="marker home" style="left: ${i/fieldSize*100}%">${i}</div>`);
-      $('#field').append(`<div class="marker away" style="left: ${100 - (i/fieldSize*100)}%">${i}</div>`);
-    }
-    for(let i = 0; i < input.teams.length; i++) {
-      for(let j = 0; j < input.teams[i].players.length; j++) {
-        const unit = input.teams[i].players[j];
-        $('#field').append(`<div class="unit unit-${j} team-${i} ${unit.name}">${j + 1}<div class="name">${unit.name}</div></div>`);
-      }
-    }
-    $('#field').append(`<div class="team-name home">${input.teams[0].shortName}</div>`);
-    $('#field').append(`<div class="team-name away">${input.teams[1].shortName}</div>`);
+    markField();
+    launchPlayers();
   }
 
-  let round = 1;
-  let phase = 'tossUp';
-  let homeScore = 0;
-  let awayScore = 0;
+  function launchPlayers() {
+    for(let i = 0; i < input.home.players.length; i++) {
+      const unit = sortie(input.home.players[i], 'home')
+      game.homeTeam.push(unit);
+      $('#field').append(`<div class="unit unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name}</div></div>`);
+    }
+    for(let i = 0; i < input.home.bench.length; i++) {
+      const unit = sortie(input.home.bench[i], 'home');
+      game.homeReserve.push(unit);
+      $('#field').append(`<div class="unit bench unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name}</div></div>`);
+    }
+    for(let i = 0; i < input.away.players.length; i++) {
+      const unit = sortie(input.away.players[i], 'away')
+      game.awayTeam.push(unit);
+      $('#field').append(`<div class="unit unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name}</div></div>`);
+    }
+    for(let i = 0; i < input.away.bench.length; i++) {
+      const unit = sortie(input.away.bench[i], 'away');
+      game.awayReserve.push(unit);
+      $('#field').append(`<div class="unit bench unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name}</div></div>`);
+    }
+
+  }
+
+  function markField() {
+    $('#field').append(`<div class="team-name home">${input.home.name}</div>`);
+    $('#field').append(`<div class="team-name away">${input.away.name}</div>`);
+    for(let i = 1; i < input.fieldSize; i++) {
+      $('#field').append(`<div class="marker home" style="left: ${i/input.fieldSize*100}%">${i}</div>`);
+      $('#field').append(`<div class="marker away" style="left: ${100 - (i/input.fieldSize*100)}%">${i}</div>`);
+    }
+  }
+
   function next() {
-    switch (phase) {
+    switch (game.phase) {
       case 'tossUp':
-        logMessage(`Round ${round}`, "round-start");
+        checkSubs();
+        logMessage(`Round ${game.round}`, "round-start");
         tossUp();
-        phase = 'scramble';
+        game.phase = 'scramble';
         break;
       case 'scramble':
         scramble();
-        phase = 'rumble';
+        game.phase = 'rumble';
         break;
       case 'rumble':
         rumble();
-        phase = 'shootout';
+        game.phase = 'shootout';
         break;
       case 'shootout':
         shootout();
-        if (round >= totalRounds && homeScore != awayScore) {
+        if (game.round >= game.totalRounds && game.homeScore != game.awayScore) {
           gameOver();
         }
         else {
-          phase = 'tossUp';
-          round++;
+          game.phase = 'tossUp';
+          game.round++;
         }
         break;
     }
@@ -213,6 +359,9 @@
 
 </script>
 <style>
+  body {
+    overflow: hidden;
+  }
   #field {
     margin-top: 200px;
     height: 3px;
@@ -237,6 +386,12 @@
   }
   .score {
     float: right;
+  }
+  b.home {
+    color: rgb(219, 69, 49);
+  }
+  b.away {
+    color: rgb(49, 117, 219);
   }
   .team-name {
     background: rgb(219, 69, 49);
@@ -281,7 +436,13 @@
     width: 20px;
     text-align: center;
   }
+  .marker.home {
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+  }
   .marker.away {
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
     bottom: 0;
     top: auto;
   }
@@ -317,35 +478,45 @@
   .unit.has-big-ball .name {
     background-color: rgb(137, 39, 228)
   }
-  .team-1 .name {
+  .unit.bench {
+    left: -65px;
+  }
+  .team-away.unit.bench {
+    right: -65px;
+    left: auto;
+  }
+  .team-away .name {
     transform: rotateZ(45deg);
   }
-  .team-0.unit-1 .name {
+  .team-home.unit-1 .name {
     bottom: 45px;
   }
-  .team-0.unit-2 .name {
+  .team-home.unit-2 .name {
     bottom: 73px;
   }
-  .team-1.unit-0 .name {
+  .team-away.unit-0 .name {
     bottom: -17px;
   }
-  .team-1.unit-1 .name {
+  .team-away.unit-1 .name {
     bottom: -45px;
   }
-  .team-1.unit-2 .name {
+  .team-away.unit-2 .name {
     bottom: -73px;
   }
 
-  .team-0 {
+  .team-home {
     border-color: rgb(219, 69, 49);
     top: -30px;
     left: 0;
   }
-  .team-1 {
+  .team-away {
     transform: translate(50%, -50%);
     border-color: rgb(49, 117, 219);
     bottom: -50px;
     right: 0;
+  }
+  #next-button {
+    margin-top: 10em;
   }
   #output {
     margin-top: 12em;
@@ -403,7 +574,6 @@
 </div>
 
 <script>
-  seededRandom = new Math.seedrandom('seed1');
   init();
 </script>
 </body>
