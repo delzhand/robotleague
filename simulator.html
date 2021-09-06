@@ -149,24 +149,38 @@
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
-      unit.hasBall = false;
-      unit.hasBigBall = false;
-      $(`.${unit.name.safeCSS()}`).removeClass('has-ball');
-      $(`.${unit.name.safeCSS()}`).removeClass('has-big-ball');
+      loseBall(unit);
       if (grabs.indexOf(i) !== -1) {
-        unit.hasBall = true;
-        $(`.${unit.name.safeCSS()}`).addClass('has-ball');
         if (bigBalls > 0) {
-          unit.hasBigBall = true;
-          $(`.${unit.name.safeCSS()}`).addClass('has-big-ball');
           bigBalls--;
-          logMessage(`<b class="${unit.team}">${unit.name}</b> grabs the sinker.`);
+          gainBigBall(unit);
         }
         else {
-          logMessage(`<b class="${unit.team}">${unit.name}</b> grabs a skimmer.`);
+          gainBall(unit);
         }
       }
     }
+  }
+
+  function loseBall(unit) {
+    unit.hasBall = false;
+    unit.hasBigBall = false;
+    $(`.${unit.name.safeCSS()}`).removeClass('has-ball');
+    $(`.${unit.name.safeCSS()}`).removeClass('has-big-ball');
+  }
+
+  function gainBall(unit) {
+    unit.hasBall = true;
+    $(`.${unit.name.safeCSS()}`).addClass('has-ball');
+    logMessage(`<b class="${unit.team}">${unit.name}</b> grabs a skimmer.`);
+  }
+
+  function gainBigBall(unit) {
+    unit.hasBall = true;
+    unit.hasBigBall = true;
+    $(`.${unit.name.safeCSS()}`).addClass('has-ball');
+    $(`.${unit.name.safeCSS()}`).addClass('has-big-ball');
+    logMessage(`<b class="${unit.team}">${unit.name}</b> grabs the sinker.`);
   }
 
   function scramble() {
@@ -188,6 +202,22 @@
       logMessage(`<b class="${unit.team}">${unit.name}</b> overshot the endzone. Out for ${unit.out} rounds.`);
     }
     updatePosition(unit);
+  }
+
+  function updateStability(unit) {
+    $(`.${unit.name.safeCSS()} .stability`).html(`${unit.cStability}`);
+    if (unit.cStability > 2) {
+      $(`.${unit.name.safeCSS()} .stability`).removeClass('critical');
+      $(`.${unit.name.safeCSS()} .stability`).removeClass('danger');
+    }
+    if (unit.cStability === 2) {
+      $(`.${unit.name.safeCSS()} .stability`).removeClass('critical');
+      $(`.${unit.name.safeCSS()} .stability`).addClass('danger');
+    }
+    if (unit.cStability <= 1) {
+      $(`.${unit.name.safeCSS()} .stability`).addClass('critical');
+      $(`.${unit.name.safeCSS()} .stability`).removeClass('danger');
+    }
   }
 
   function updatePosition(unit) {
@@ -222,7 +252,9 @@
       if (distance === 0) {
         scuffle = oppose[i];
       }
-      targets.push({type: 'opponent', distance, unit: oppose[i]});
+      if (distance > 0) {
+        targets.push({type: 'opponent', distance, unit: oppose[i]});
+      }
     }
     if (scuffle) {
       logMessage(`<b class="${unit.team}">${unit.name}</b> is in a scuffle with <b class="${scuffle.team}">${scuffle.name}</b> and can't shoot.`);
@@ -249,20 +281,23 @@
       logMessage(`<b class="${unit.team}">${unit.name}</b> shoots at <b class="${target.unit.team}">${target.unit.name}</b>.`);
       if (hit && unit.hasBigBall) {
         logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with the sinker.`);
-        target.unit.stability -= 2;
-        target.unit.position -= 2;
+        target.unit.cStability -= 2;
+        updateStability(target.unit);
+        target.unit.position = Math.max(target.unit.position - 2, 0);
         updatePosition(target.unit);
       }
       else if (hit) {
         logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with a skimmer.`);
-        target.unit.stability -= 1;
-        target.unit.position -= 1;
+        target.unit.cStability -= 1;
+        updateStability(target.unit);
+        target.unit.position = Math.max(target.unit.position - 1, 0);
         updatePosition(target.unit);
       }
       else {
         logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b>.`);
       }
     }
+    loseBall(unit);
   }
 
   function makeShot(distance, accuracy) {
@@ -299,22 +334,22 @@
     for(let i = 0; i < input.home.players.length; i++) {
       const unit = sortie(input.home.players[i], 'home')
       game.homeTeam.push(unit);
-      $('#field').append(`<div class="unit unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name}</div></div>`);
+      $('#field').append(`<div class="unit unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
     for(let i = 0; i < input.home.bench.length; i++) {
       const unit = sortie(input.home.bench[i], 'home');
       game.homeReserve.push(unit);
-      $('#field').append(`<div class="unit bench unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name}</div></div>`);
+      $('#field').append(`<div class="unit bench unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
     for(let i = 0; i < input.away.players.length; i++) {
       const unit = sortie(input.away.players[i], 'away')
       game.awayTeam.push(unit);
-      $('#field').append(`<div class="unit unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name}</div></div>`);
+      $('#field').append(`<div class="unit unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
     for(let i = 0; i < input.away.bench.length; i++) {
       const unit = sortie(input.away.bench[i], 'away');
       game.awayReserve.push(unit);
-      $('#field').append(`<div class="unit bench unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name}</div></div>`);
+      $('#field').append(`<div class="unit bench unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
 
   }
@@ -461,9 +496,9 @@
   }
   .unit .name {
     background: #000;
-    padding: 2px 4px;
+    padding-left: 4px;
     color: #FFF;
-    border-radius: 2px;
+    border-radius: 4px;
     position: absolute;
     display: inline-block;
     bottom: 17px;
@@ -471,6 +506,23 @@
     transform-origin: center left;
     transform: rotateZ(-45deg);
     white-space: nowrap;
+    vertical-align: middle;
+  }
+  .unit .name .stability {
+    display: inline-block;
+    padding: 2px 4px;
+    margin-left: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+  .stability {
+    background: rgb(27, 177, 79);
+  }
+  .stability.danger {
+    background: rgb(255, 239, 10);
+  }
+  .stability.critical {
+    background: rgb(255, 10, 10);
   }
   .unit.has-ball .name {
     background-color: rgb(228, 162, 39)
