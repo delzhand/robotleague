@@ -17,7 +17,6 @@
     totalRounds: 5,
     balls: 3,
     bigBalls: 1,
-    fieldProperties: ['flooded', 'low visibility'],
     home: {
       name: 'Wavelengths',
       players: ['U-wetatso', 'Tsa-huro', 'Mosadatsi'],
@@ -33,7 +32,6 @@
   const game = {
     round: 1,
     phase: 'tossUp',
-    fieldProperties: input.fieldProperties,
     balls: input.balls,
     bigBalls: input.bigBalls,
     homeScore: 0,
@@ -103,7 +101,7 @@
       cStability: players[name].stability,
       mStability: players[name].stability,
       accuracy: players[name].accuracy,
-      skill: players[name].skill,
+      jump: players[name].jump,
       speed: players[name].speed,
       talent: players[name].talent,
       hasBall: false,
@@ -144,7 +142,13 @@
       const unit = allPlayers[i];
       loseBall(unit);
     }
-    let activePlayers = shuffle(getAllActivePlayers());
+    let activePlayers = getAllActivePlayers();
+    let tossUpOrder = [];
+    for (let i = 0; i < activePlayers.length; i++) {
+      const jump = getSuccesses(activePlayers[i].jump);
+      tossUpOrder.push({jump, unit: activePlayers[i]});
+    }
+    tossUpOrder.sort(compareJump)
     for(let i = 0; i < input.balls; i++) {
       const unit = activePlayers[i];
       if (!unit.out) {
@@ -157,6 +161,10 @@
         }
       }
     }
+  }
+
+  function compareJump(a, b) {
+    return a.jump - b.jump;
   }
 
   function loseBall(unit) {
