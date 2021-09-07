@@ -33,4 +33,21 @@ const matches = [
       bench: ['Ultimate Gun-Head', 'Astro Nergal']
     }
   },
+  {
+    randomSeed: 'test',
+    fieldSize: 12,
+    totalRounds: 5,
+    balls: 3,
+    bigBalls: 1,
+    home: {
+      name: 'Magnets',
+      players: ['Saxophone Blue', 'Melodious Mistake', 'Queen\'s Gambit'],
+      bench: ['Radiant Memento', 'Weeping Willow']
+    },
+    away: {
+      name: 'Lasers',
+      players: ['Self Entitled', 'Listen Here You', 'Cry Power'],
+      bench: ['Beyond the Hour', 'Lacking in Culture if Not Grace']
+    }
+  },
 ];

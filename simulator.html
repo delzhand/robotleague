@@ -81,6 +81,7 @@
   String.prototype.safeCSS = function() {
     return encodeURIComponent(this)
       .toLowerCase()
+      .replace('\'', '')
       .replace(/\.|%[0-9a-z]{2}/gi, '');
   }
 
@@ -116,7 +117,7 @@
     if (game.round > input.totalRounds) {
       return 'Sudden Death';
     }
-    return `Round ${game.round}`;
+    return `Round ${game.round}/${input.totalRounds}`;
   }
 
   function getAllPlayers() {
@@ -271,31 +272,28 @@
     }
 
     const target = targets[getRandomInt(targets.length)];
-    const hit = makeShot(target.distance, unit.accuracy);
+    const shot = makeShot(target.distance, unit.accuracy);
     if (target.type === 'goal') {
-      if (hit && unit.hasBigBall) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="sinker">sinker</b> for 3 points.`);
+      if (shot.success && unit.hasBigBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="sinker">sinker</b> for 3 points (${Math.floor(shot.rate)}%).`);
         updateScore(unit.team, 3);
       }
-      else if (hit) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="skimmer">skimmer</b> for 1 point.`);
+      else if (shot.success) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="skimmer">skimmer</b> for 1 point (${Math.floor(shot.rate)}%).`);
         updateScore(unit.team, 1);
       }
       else if (unit.hasBigBall) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with the <b class="sinker">sinker</b>.`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}%).`);
       }
       else {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with a <b class="skimmer">skimmer</b>.`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
       }
     }
     else {
-      if (hit && unit.hasBigBall) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b>.`);
+      if (shot.success && unit.hasBigBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}%).`);
         target.unit.cStability -= 2;
         if (target.unit.cStability <= 0) {
-          // target.unit.position = 0;
-          // target.unit.out += 1 + -target.unit.cStability;
-          // logMessage(`<b class="${target.unit.team}">${target.unit.name}</b> was knocked out for ${target.unit.out + 1} turns.`);
           loseBall(target.unit);
         }
         updateStability(target.unit);
@@ -304,8 +302,8 @@
         }
         updatePosition(target.unit);
       }
-      else if (hit) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with a <b class="skimmer">skimmer</b>.`);
+      else if (shot.success) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
         target.unit.cStability -= 1;
         if (target.unit.cStability <= 0) {
           // target.unit.position = 0;
@@ -321,10 +319,10 @@
         updatePosition(target.unit);
       }
       else if (unit.hasBigBall) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b>.`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}%).`);
       }
       else {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with a <b class="skimmer">skimmer</b>.`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
       }
     }
     loseBall(unit);
@@ -335,7 +333,7 @@
     let modifiedDistance = distance - successes;
     let hitRate = .1 + (.8 * (1 - (modifiedDistance/input.fieldSize)));
     hitRate *= 100;
-    return getRandomInt(100) >= hitRate;
+    return {success: getRandomInt(100) >= hitRate, rate: hitRate};
   }
 
   function checkOuts() {
