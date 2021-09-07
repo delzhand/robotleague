@@ -11,23 +11,11 @@
 <script src="./players.js"></script>
 
 <script>
-  const input = {
-    randomSeed: 'test',
-    fieldSize: 12,
-    totalRounds: 5,
-    balls: 3,
-    bigBalls: 1,
-    home: {
-      name: 'Wavelengths',
-      players: ['U-wetatso', 'Tsa-huro', 'Mosadatsi'],
-      bench: ['Disintu', 'Sha-ea']
-    },
-    away: {
-      name: 'Irregulars',
-      players: ['Error: Divide By Zero', 'An Exception Has Occurred', 'Landing Gear Damaged'],
-      bench: ['Could Not Locate "Name"', 'Core Dump']
-    }
-  };
+  q = getUrlVars();
+  let script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = './' + q.match + '.js';
+  $('head').append(script);
 
   const game = {
     round: 1,
@@ -44,6 +32,18 @@
     homeSub: true,
     awaySub: true,
   };
+
+  function getUrlVars() {
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+  }
 
   function getRandomInt(max) {
     return Math.floor(game.rand() * max);
@@ -95,6 +95,7 @@
   }
 
   function sortie(name, team) {
+    console.log(name);
     const player = {
       name,
       team,
@@ -729,10 +730,18 @@
     <div id="log" class="log-inner"></div>
   </div>    
   <a id="next-button" class="btn btn-primary" onclick="next()">Next</a>
+
+  <div id="p"></div>
 </div>
 
 <script>
   init();
+
+  // for(let i = 0; i < p.length; i++) {
+  //   const x = `'${p[i]}': {stability: ${getRandomInt(5)+1}, accuracy: ${getRandomInt(5)+1}, speed: ${getRandomInt(5)+1}, jump: ${getRandomInt(5)+1}},<br/>`;
+  //   $('#p').append(x);
+  // }
+
 </script>
 </body>
 <html>
