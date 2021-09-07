@@ -254,6 +254,7 @@ b.skimmer {
   text-align: right;
 }
 #roster .teamname {
+  margin-top: 10px;
   color: #FFF;
   padding: 15px;
   border-radius: 4px;
