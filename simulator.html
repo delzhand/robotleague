@@ -447,6 +447,27 @@
         renderPlayerProfile(unit);
       }
     }
+
+    let homeRating = 0;
+    groups = [game.homeTeam, game.homeReserve];
+    for (let i = 0; i < groups.length; i++) {
+      for(let j = 0; j < groups[i].length; j++) {
+        const unit = groups[i][j];
+        homeRating += unit.mStability + unit.speed + unit.accuracy + unit.jump;
+      }
+    }
+    $('#roster .home .teamname').html(`${input.home.name} ${homeRating}★`);
+
+    let awayRating = 0;
+    groups = [game.awayTeam, game.awayReserve];
+    for (let i = 0; i < groups.length; i++) {
+      for(let j = 0; j < groups[i].length; j++) {
+        const unit = groups[i][j];
+        awayRating += unit.mStability + unit.speed + unit.accuracy + unit.jump;
+      }
+    }
+    $('#roster .away .teamname').html(`${input.away.name} ${awayRating}★`);
+
   }
 
   function renderPlayerProfile(unit) {
@@ -474,7 +495,7 @@
         output += '★';
       }
       else {
-        output += '☆';
+        output += '<span class="faded">☆</span>';
       }
     }
     return output;
@@ -518,8 +539,12 @@
 
 <div class="container">
   <div id="roster" class="row">
-    <div class="home col col-xs-6"></div>
-    <div class="away col col-xs-6"></div>
+    <div class="home col col-xs-6">
+      <div class="teamname">Home</div>
+    </div>
+    <div class="away col col-xs-6">
+      <div class="teamname">Away</div>
+    </div>
   </div>
 
   <div id="field">

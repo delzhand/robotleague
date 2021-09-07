@@ -253,6 +253,19 @@ b.skimmer {
 #roster .away {
   text-align: right;
 }
+#roster .teamname {
+  color: #FFF;
+  padding: 15px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.home .teamname {
+  background: rgb(219, 69, 49);
+}
+.away .teamname {
+  background: rgb(49, 117, 219);
+}
+
 .player-profile {
   border-radius: 4px;
   display: inline-block;
@@ -275,4 +288,7 @@ b.skimmer {
   min-width: 64px;
   display: inline-block;
   text-align: right;
+}
+.player-profile .faded {
+  color: rgba(255, 255, 255, .25);
 }
