@@ -14,23 +14,29 @@ body {
 }
 #next-button {
   float: left;
-  margin-left: 10px;
+  background: green;
+  color: #FFF;
+  border-radius: 4px;
+  font-weight: bold;
+  padding: 7px 8px;
+  cursor: pointer;
 }
 .round,
 .score {
   padding: 7px 8px;
   background: rgb(66, 66, 66);
   color: #FFF;
-  border-radius: 2px;
+  border-radius: 4px;
   display: inline-block;
   margin-left: auto;
   margin-right: auto;
   font-weight: bold;
 }
 .round {
-  float: left;
+  float: right;
 }
 .score {
+  margin-left: 3px;
   float: right;
 }
 b.home {
@@ -249,6 +255,20 @@ b.skimmer {
 }
 .round-start {
   font-weight: bold;
+}
+#toggle-roster {
+  cursor: pointer;
+  background: green;
+  color: #FFF;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 10px;
+  display: block;
+  text-align: center;
+  border-radius: 4px;
+}
+#roster {
+  display: none;
 }
 #roster .away {
   text-align: right;
