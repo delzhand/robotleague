@@ -287,14 +287,20 @@ b.skimmer {
   background: rgb(49, 117, 219);
 }
 
+.team-profile,
 .player-profile {
+  background: gray;
   border-radius: 4px;
   display: inline-block;
   padding: 15px;
   margin-top: 1em;
   color: #FFF;
 }
-
+.team-profile {
+  display: flex;
+  font-weight: bold;
+  margin-top: 15px;
+}
 .player-profile .name {
   font-weight: bold;
   text-align: center;
