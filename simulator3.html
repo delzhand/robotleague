@@ -1,0 +1,609 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="./style2.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.scrollto@2.1.3/jquery.scrollTo.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+<script src="./players.js"></script>
+<script src="./matches.js"></script>
+
+<script>
+  q = getUrlVars();
+  const input = matches[q.match];
+
+  const game = {
+    round: 1,
+    phase: 'tossUp',
+    balls: input.balls,
+    bigBalls: input.bigBalls,
+    homeScore: 0,
+    awayScore: 0,    
+    rand: new Math.seedrandom(input.randomSeed),
+    homeTeam: [],
+    homeReserve: [],
+    awayTeam: [],
+    awayReserve: [],
+    homeSub: true,
+    awaySub: true,
+  };
+
+  function getUrlVars() {
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+  }
+
+  function getRandomInt(max) {
+    return Math.floor(game.rand() * max);
+  }
+
+  function getCoinFlip() {
+    return (Math.floor(game.rand() * 2)) === 0;
+  }
+
+  function getDiceRoll() {
+    return getRandomInt(6)+1;
+  }
+
+  function getSuccesses(count, threshold) {
+    let successes = 0;
+    for (let i = 0; i < count; i++) {
+      const roll = getDiceRoll();
+      if (roll > threshold) {
+        successes++;
+      }
+    }
+    return successes;
+  }
+
+  function shuffle(array) {
+    let currentIndex = array.length,  randomIndex;
+    while (0 !== currentIndex) {
+      randomIndex = getRandomInt(currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    return array;
+  }
+
+  String.prototype.safeCSS = function() {
+    return encodeURIComponent(this)
+      .toLowerCase()
+      .replace('\'', '')
+      .replace(/\.|%[0-9a-z]{2}/gi, '');
+  }
+
+  function logMessage(m, c) {
+    if (c) {
+      $('#log').append(`<div class="${c}">${m}</div>`);
+    }
+    else {
+      $('#log').append(`<div>${m}</div>`);
+    }
+  }
+
+  function sortie(name, team) {
+    console.log(name);
+    const player = {
+      name,
+      team,
+      cStability: 2 + Math.max(0, (Math.ceil(players[name].stability/2)) - 1),
+      mStability: 2 + Math.max(0, (Math.ceil(players[name].stability/2)) - 1),
+      accuracy: players[name].accuracy,
+      jump: players[name].jump,
+      speed: players[name].speed,
+      talent: players[name].talent,
+      hasBall: false,
+      hasBigBall: false,
+      out: 0,
+      position: 0,
+    }
+    return player;
+  }
+
+  function roundText() {
+    if (game.round > input.totalRounds) {
+      return 'Sudden Death';
+    }
+    return `Round ${game.round}/${input.totalRounds}`;
+  }
+
+  function getAllPlayers() {
+    return game.homeTeam.concat(game.awayTeam);
+  }
+  
+  function getAllActivePlayers() {
+    let allPlayers = shuffle(getAllPlayers());
+    const active = [];
+    for(let i = 0; i < allPlayers.length; i++) {
+      if (!allPlayers[i].out) {
+        active.push(allPlayers[i]);
+      }
+    }
+    return active;
+  }
+
+  function tossUp() {
+    $('.round').html(`${roundText()} - Toss Up`);
+    let bigBalls = game.bigBalls;
+    let allPlayers = shuffle(getAllPlayers());
+    for(let i = 0; i < allPlayers.length; i++) {
+      const unit = allPlayers[i];
+      loseBall(unit);
+    }
+    let activePlayers = getAllActivePlayers();
+    let tossUpOrder = [];
+    for (let i = 0; i < activePlayers.length; i++) {
+      const jump = getSuccesses(activePlayers[i].jump);
+      tossUpOrder.push({jump, unit: activePlayers[i]});
+    }
+    tossUpOrder.sort(compareJump)
+    for(let i = 0; i < input.balls; i++) {
+      const unit = activePlayers[i];
+      if (!unit.out) {
+        if (bigBalls > 0) {
+          bigBalls--;
+          gainBigBall(unit);
+        }
+        else {
+          gainBall(unit);
+        }
+      }
+    }
+  }
+
+  function compareJump(a, b) {
+    return a.jump - b.jump;
+  }
+
+  function loseBall(unit) {
+    unit.hasBall = false;
+    unit.hasBigBall = false;
+    $(`.${unit.name.safeCSS()}`).removeClass('has-ball');
+    $(`.${unit.name.safeCSS()}`).removeClass('has-big-ball');
+  }
+
+  function gainBall(unit) {
+    unit.hasBall = true;
+    $(`.${unit.name.safeCSS()}`).addClass('has-ball');
+    logMessage(`<b class="${unit.team}">${unit.name}</b> grabs a <b class="skimmer">skimmer</b>.`);
+  }
+
+  function gainBigBall(unit) {
+    unit.hasBall = true;
+    unit.hasBigBall = true;
+    $(`.${unit.name.safeCSS()}`).addClass('has-ball');
+    $(`.${unit.name.safeCSS()}`).addClass('has-big-ball');
+    logMessage(`<b class="${unit.team}">${unit.name}</b> grabs the <b class="sinker">sinker</b>.`);
+  }
+
+  function scramble() {
+    $('.round').html(`${roundText()} - Scramble`);
+    let allPlayers = shuffle(getAllPlayers());
+    for(let i = 0; i < allPlayers.length; i++) {
+      const unit = allPlayers[i];
+      if (!unit.out) {
+        move(unit);
+      }
+    }
+    logMessage("The players scramble for position.");
+  }
+
+  function move(unit) {
+    const movement = getSuccesses(unit.speed, 3) + 1;
+    unit.position += movement;
+    if (unit.position >= input.fieldSize) {
+      unit.position = 0;
+      unit.out = 1;
+      if (unit.hasBigBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> reached the endzone with the <b class="sinker">Sinker</b>. Out for ${unit.out} rounds.`);
+        updateScore(unit, 4);
+      }
+      else if (unit.hasBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> reached the endzone with a <b class="skimmer">Skimmer</b>. Out for ${unit.out} rounds.`);
+        updateScore(unit, 2);
+      }
+      else {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> reached the endzone. Out for ${unit.out} rounds.`);
+        updateScore(unit, 1);
+      }
+    }
+    updatePosition(unit);
+  }
+
+  function updateStability(unit) {
+    $(`.${unit.name.safeCSS()} .stability`).html(`${unit.cStability}`);
+    if (unit.cStability > 2) {
+      $(`.${unit.name.safeCSS()} .stability`).removeClass('critical');
+      $(`.${unit.name.safeCSS()} .stability`).removeClass('danger');
+    }
+    if (unit.cStability === 2) {
+      $(`.${unit.name.safeCSS()} .stability`).removeClass('critical');
+      $(`.${unit.name.safeCSS()} .stability`).addClass('danger');
+    }
+    if (unit.cStability <= 1) {
+      $(`.${unit.name.safeCSS()} .stability`).addClass('critical');
+      $(`.${unit.name.safeCSS()} .stability`).removeClass('danger');
+    }
+  }
+
+  function updatePosition(unit) {
+    const posPercent = unit.position / input.fieldSize * 100;
+    const direction = (unit.team === 'home') ? 'left' : 'right';
+    $(`.${unit.name.safeCSS()}`).css(direction, posPercent + '%');
+  }
+
+  function rumble() {
+    $('.round').html(`${roundText()} - Rumble`);
+  }
+
+  function shootout() {
+    $('.round').html(`${roundText()} - Shootout`);
+    let allPlayers = shuffle(getAllPlayers());
+    for(let i = 0; i < allPlayers.length; i++) {
+      const unit = allPlayers[i];
+      if (!unit.out && unit.hasBall) {
+        shoot(unit);
+      }
+    }
+  }
+
+  function shoot(unit) {
+    let scuffle = false;
+    const targets = [];
+    targets.push({type: 'goal', distance: input.fieldSize - unit.position});
+    const oppose = (unit.team === 'home') ? game.awayTeam : game.homeTeam;
+    for (let i = 0; i < oppose.length; i++) {
+      if (!oppose[i].out) {
+        const reverseDistance = (input.fieldSize - oppose[i].position);
+        const distance = reverseDistance - unit.position;
+        if (distance === 0) {
+          scuffle = oppose[i];
+        }
+        if (distance > 0) {
+          targets.push({type: 'opponent', distance, unit: oppose[i]});
+        }
+      }
+    }
+    if (scuffle) {
+      logMessage(`<b class="${unit.team}">${unit.name}</b> is in a scuffle with <b class="${scuffle.team}">${scuffle.name}</b> and can't shoot.`);
+      return false;
+    }
+
+    const target = targets[getRandomInt(targets.length)];
+    const shot = makeShot(target.distance, unit.accuracy);
+    if (target.type === 'goal') {
+      if (shot.success && unit.hasBigBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}%).`);
+        updateScore(unit, 5);
+      }
+      else if (shot.success) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
+        updateScore(unit, 3);
+      }
+      else if (unit.hasBigBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}%).`);
+      }
+      else {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
+      }
+    }
+    else {
+      if (shot.success && unit.hasBigBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}%).`);
+        target.unit.cStability -= 2;
+        if (target.unit.cStability <= 0) {
+          loseBall(target.unit);
+          updateScore(unit.team, 2);
+        }
+        updateStability(target.unit);
+        if (!target.unit.out) {
+          target.unit.position = Math.max(target.unit.position - 2, 0);
+        }
+        updatePosition(target.unit);
+      }
+      else if (shot.success) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
+        target.unit.cStability -= 1;
+        if (target.unit.cStability <= 0) {
+          // target.unit.position = 0;
+          // target.unit.out += 1 + -target.unit.cStability;
+          // console.log(target.unit.out);
+          // logMessage(`<b class="${target.unit.team}">${target.unit.name}</b> was knocked out for ${target.unit.out + 1} turns.`);
+          loseBall(target.unit);
+        }
+        updateStability(target.unit);
+        if (!target.unit.out) {
+          target.unit.position = Math.max(target.unit.position - 1, 0);
+        }
+        updatePosition(target.unit);
+      }
+      else if (unit.hasBigBall) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}%).`);
+      }
+      else {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
+      }
+    }
+    loseBall(unit);
+  }
+
+  function makeShot(distance, accuracy) {
+    const baseChance = .2;
+    const flexChance = .75;
+    const successes = getSuccesses(accuracy);
+    let modifiedDistance = distance - successes;
+    let hitRate = baseChance + (flexChance * (1 - (modifiedDistance/input.fieldSize)));
+    hitRate *= 100;
+    return {success: getRandomInt(100) >= hitRate, rate: hitRate};
+  }
+
+  function checkOuts() {
+    let allPlayers = getAllPlayers();
+    for(let i = 0; i < allPlayers.length; i++) {
+      const unit = allPlayers[i];
+      if (unit.out === 1) {
+        logMessage(`<b class="${unit.team}">${unit.name}</b> is no longer out.`);
+      }
+      if (unit.out > 0) {
+        unit.out--;
+      }
+    }
+  }
+
+  function checkSubs() {
+    let allPlayers = getAllPlayers();
+    for(let i = 0; i < allPlayers.length; i++) {
+      const unit = allPlayers[i];
+      if (unit.cStability <= -1) {
+        if (unit.team === 'home' && game.homeSub) {
+          game.homeSub = false;
+          const sub = game.homeReserve[0];
+          const teamPosition = game.homeTeam.indexOf(unit);
+          game.homeTeam[teamPosition] = sub;
+          game.homeReserve.push(unit);
+          $(`.${sub.name.safeCSS()}`).removeClass('bench').removeClass('unit-0').addClass(`unit-${teamPosition}`);
+          $(`.${unit.name.safeCSS()}`).addClass('bench').addClass('unit-0').removeClass(`unit-${teamPosition}`).css('left', '');
+          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>`);
+          console.log(game.homeTeam);
+        }
+        else if (unit.team === 'away' && game.awaySub) {
+          game.awaySub = false;
+          const sub = game.awayReserve[0];
+          const teamPosition = game.awayTeam.indexOf(unit);
+          game.awayTeam[teamPosition] = sub;
+          game.awayReserve.push(unit);
+          $(`.${sub.name.safeCSS()}`).removeClass('bench').removeClass('unit-0').addClass(`unit-${teamPosition}`);
+          $(`.${unit.name.safeCSS()}`).addClass('bench').addClass('unit-0').removeClass(`unit-${teamPosition}`).css('right', '');
+          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>`);
+          console.log(game.awayTeam);
+        }
+        else {
+          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. No sub allowed.`);
+        }
+      }
+    }
+  }
+
+  function updateScore(unit, points) {
+    logMessage(`<b class="${unit.team}">${unit.name}</b> scores ${points} points.`)
+    if (unit.team === 'home') {
+      game.homeScore += points;
+      $('.home-score').html(game.homeScore);
+    }
+    else {
+      game.awayScore += points;
+      $('.away-score').html(game.awayScore);
+    };
+
+  }
+
+  function gameOver() {
+    $('.round').html('Post-game');
+    $('#next-button').remove();
+  }
+
+  function init() {
+    markField();
+    launchPlayers();
+    renderRoster();
+  }
+
+  function launchPlayers() {
+    for(let i = 0; i < input.home.players.length; i++) {
+      const unit = sortie(input.home.players[i], 'home')
+      game.homeTeam.push(unit);
+      $('#field').append(`<div class="unit unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
+    }
+    for(let i = 0; i < input.home.bench.length; i++) {
+      const unit = sortie(input.home.bench[i], 'home');
+      game.homeReserve.push(unit);
+      $('#field').append(`<div class="unit bench unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
+    }
+    for(let i = 0; i < input.away.players.length; i++) {
+      const unit = sortie(input.away.players[i], 'away')
+      game.awayTeam.push(unit);
+      $('#field').append(`<div class="unit unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
+    }
+    for(let i = 0; i < input.away.bench.length; i++) {
+      const unit = sortie(input.away.bench[i], 'away');
+      game.awayReserve.push(unit);
+      $('#field').append(`<div class="unit bench unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
+    }
+
+  }
+
+  function markField() {
+    $('#field').append(`<div class="team-name home">${input.home.name}</div>`);
+    $('#field').append(`<div class="team-name away">${input.away.name}</div>`);
+    for(let i = 1; i < input.fieldSize; i++) {
+      $('#field').append(`<div class="marker away" style="left: ${i/input.fieldSize*100}%">${i}</div>`);
+      $('#field').append(`<div class="marker home" style="left: ${100 - (i/input.fieldSize*100)}%">${i}</div>`);
+    }
+  }
+
+  function renderRoster() {
+    let groups = [game.homeTeam, game.homeReserve, game.awayTeam, game.awayReserve];
+    for (let i = 0; i < groups.length; i++) {
+      for(let j = 0; j < groups[i].length; j++) {
+        const unit = groups[i][j];
+        renderPlayerProfile(unit);
+      }
+    }
+
+    let homeRating = 0;
+    groups = [game.homeTeam, game.homeReserve];
+    for (let i = 0; i < groups.length; i++) {
+      for(let j = 0; j < groups[i].length; j++) {
+        const unit = groups[i][j];
+        homeRating += unit.mStability + unit.speed + unit.accuracy + unit.jump;
+      }
+    }
+    $('#roster .home .teamname').html(`${input.home.name} ${homeRating}★`);
+
+    let awayRating = 0;
+    groups = [game.awayTeam, game.awayReserve];
+    for (let i = 0; i < groups.length; i++) {
+      for(let j = 0; j < groups[i].length; j++) {
+        const unit = groups[i][j];
+        awayRating += unit.mStability + unit.speed + unit.accuracy + unit.jump;
+      }
+    }
+    $('#roster .away .teamname').html(`${input.away.name} ${awayRating}★`);
+
+  }
+
+  function renderPlayerProfile(unit) {
+    let $team = $('#roster .home.col');
+    if (unit.team === 'away') {
+      $team = $('#roster .away.col');
+    }
+    const output = `
+      <div class="player-profile ${unit.team}">
+        <div class="name">${unit.name}</div>
+        <div class="name">${unit.mStability + unit.speed + unit.accuracy + unit.jump}★</div>
+        <div class="stat"><span class="label">Stability</span>: ${renderStars(unit.mStability)}</div>
+        <div class="stat"><span class="label">Speed</span>: ${renderStars(unit.speed)}</div>
+        <div class="stat"><span class="label">Accuracy</span>: ${renderStars(unit.accuracy)}</div>
+        <div class="stat"><span class="label">Jump</span>: ${renderStars(unit.jump)}</div>
+      </div>
+    `;
+    $team.append(output);
+  }
+
+  function renderStars(count) {
+    let output = '';
+    for(let i = 0; i < 6; i++) {
+      if (i < count) {
+        output += '★';
+      }
+      else {
+        output += '<span class="faded">☆</span>';
+      }
+    }
+    return output;
+  }
+
+  function next() {
+    switch (game.phase) {
+      case 'tossUp':
+        checkOuts();
+        checkSubs();
+        logMessage(`Round ${game.round}`, "round-start");
+        tossUp();
+        game.phase = 'scramble';
+        break;
+      case 'scramble':
+        scramble();
+        // game.phase = 'rumble';
+        game.phase = 'shootout';
+        break;
+      // case 'rumble':
+      //   rumble();
+      //   game.phase = 'shootout';
+      //   break;
+      case 'shootout':
+        shootout();
+        if (game.round >= input.totalRounds && game.homeScore != game.awayScore) {
+          gameOver();
+        }
+        else {
+          game.phase = 'tossUp';
+          game.round++;
+        }
+        break;
+    }
+  }
+
+  function toggleRoster() {
+    $('#roster').slideToggle();
+  }
+
+</script>
+<title>Titan League Blastball | Match Visualizer</title>
+</head>
+<body>
+
+<div class="container">
+  <a id="toggle-roster" onclick="toggleRoster()">Show/Hide Roster</a>
+
+  <div id="roster" class="hidden">
+    <div class="row">
+      <div class="home col col-xs-6">
+        <div class="teamname">Home</div>
+      </div>
+      <div class="away col col-xs-6">
+        <div class="teamname">Away</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="field">
+    <div class="goal goal-a"></div>
+    <div class="goal goal-b"></div>
+  </div>
+
+  <div id="scoreboard" class="clearfix">
+    <div class="col col-xs-6">
+      <a id="next-button" onclick="next()">Next</a>
+    </div>
+    <div class="col col-xs-6">
+      <div class="score">Home: <span class="home-score">0</span> | Away: <span class="away-score">0</span></div>
+      <div class="round">Pre-game</div>
+    </div>
+  </div>
+
+  <div id="output" class="log-frame">
+    <div class="log-label">Log</div>
+    <div id="log" class="log-inner"></div>
+  </div>    
+
+  <div id="p"></div>
+</div>
+
+<script>
+  init();
+
+  // for(let i = 0; i < p.length; i++) {
+  //   const x = `'${p[i][0].replace('\'', '\\\'')}': {stability: ${getRandomInt(5)+1}, accuracy: ${getRandomInt(5)+1}, speed: ${getRandomInt(5)+1}, jump: ${getRandomInt(5)+1}, team: '${p[i][1].replace('\'', '\\\'')}'},<br/>`;
+  //   $('#p').append(x);
+  // }
+
+</script>
+</body>
+<html>
