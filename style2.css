@@ -2,10 +2,190 @@ body {
   overflow-x: hidden;
   background: url(bg.png);
 }
+
 .container {
   font-family: 'Josefin Sans', sans-serif;
 }
+
+.new-field {
+  margin-top: 200px;
+  background: rgb(65, 90, 74);
+  height: 200px;
+  width: 100%;
+  position: relative;
+  transform-origin: bottom;
+  transform-style: preserve-3d;
+  transform: perspective(14cm) rotateX(25deg);
+  border-top: 3px solid #FFF;
+  border-bottom: 3px solid #FFF;
+}
+.field-pointer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  transform-origin: top left;
+  width: 100%;
+  transform: 
+    translate(-14px, 0)
+    rotateZ(-90deg)
+    perspective(14cm)
+    rotateY(-25deg)
+    scaleX(.8)
+  ;
+  transition-duration: 1s;
+}
+.playzone {
+  height: 100%;
+  width: 80%;
+  position: absolute;
+  top: 0;
+  left: 10%;
+}
+.marker-line {
+  position: absolute;
+  top: 0;
+  color: #FFF;
+}
+.marker-line.away {
+  top: auto;
+  bottom: 0;
+}
+.endzone {
+  background: rgb(49, 117, 219);
+  border-right: 3px solid #FFF;
+  border-left: 3px solid #FFF;
+  height: 100%;
+  width: 10%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.team-paint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotateZ(-90deg);
+  color: #FFF;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 22px;
+}
+.goalpost { 
+  position: absolute;
+  top: 50%;
+  height: 30px;
+  width: 30px;
+  background: gold;
+  border: 3px solid #FFF;
+  right: 100%;
+  border-top-left-radius: 50%;
+  border-bottom-left-radius: 50%;
+  transform: translate(0, -50%);
+}
+.endzone:last-of-type {
+  left: auto;
+  right: 0;
+}
+.endzone:last-of-type .team-paint {
+  transform: translate(-50%, -50%) rotateZ(90deg);
+}
+.endzone:last-of-type .goalpost {
+  right: auto;
+  left: 100%;
+  border-radius: 0;
+  border-top-right-radius: 50%;
+  border-bottom-right-radius: 50%;
+}
+
+.field-player {
+  cursor: help;
+  color: #FFF;
+  display: inline-block;
+}
+.field-player .flag {
+  background-color: black;
+  border-radius: 5px;
+  border: 1px solid #666;
+}
+.field-player .flag .player-name .full {
+  display: none;
+}
+.field-player .flag .team,
+.field-player .flag .player-name,
+.field-player .flag .stability {
+  display: inline-block;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 2px;
+}
+.field-player .flag .team {
+  background: rgb(219, 69, 49);
+}
+.field-player .flag .team.away {
+  background: rgb(49, 117, 219);
+}
+.field-player .flag .stability {
+  background: rgb(27, 177, 79);
+  border-left: 1px solid #666;
+}
+.field-player .flag .stability.danger {
+  background: rgb(255, 239, 10);
+}
+.field-player .flag .stability.critical {
+  background: rgb(255, 10, 10);
+}
+.field-player .stats {
+  background: #000;
+  border: 1px solid #666;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  padding-left: 6px;
+  padding-right: 6px;
+  height: 0;
+  overflow: hidden;
+  transition-duration: .2s;
+  display: inline-block;
+  margin-left: 32px;
+  margin-top: -2px;
+  z-index: -1;
+  position: relative;
+}
+.field-player:hover .stats .name .short {
+  display: none;
+}
+.field-player:hover .stats .name .full {
+  display: none;
+}
+.field-player:hover .stats {
+  height: 96px;
+}
+.field-player .stats .stat {
+  color: gold;
+}
+.field-player .stats .stat .label {
+  color: #FFF;
+  display: inline-block;
+  font-weight: bold;
+  width: 22px;
+  height: 22px;
+  text-align: center;
+  transform: rotateZ(90deg);
+}
+.field-player .stats .stat .unfilled {
+  color: #FFF;
+  opacity: .25;
+}
+
+.has-ball .field-player .flag {
+  background-color: rgb(228, 162, 39);
+}
+.has-big-ball .field-player .flag {
+  background-color: rgb(137, 39, 228);
+}
+
 #field {
+  /* display: none; */
   margin: 180px 0;
   height: 3px;
   background-color: rgb(59, 117, 79);
@@ -138,6 +318,7 @@ b.skimmer {
   /* transform: rotateZ(-45deg); */
   white-space: nowrap;
   vertical-align: middle;
+  padding-top: 2px;
 }
 .unit .name:before {
   content: '';
@@ -151,10 +332,12 @@ b.skimmer {
 }
 .unit .name .stability {
   display: inline-block;
-  padding: 2px 4px;
+  padding: 2px 4px 1px;
   margin-left: 4px;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
+  position: relative;
+  top: -1px;
 }
 .stability {
   background: rgb(27, 177, 79);
@@ -280,6 +463,7 @@ b.skimmer {
   display: block;
   text-align: center;
   border-radius: 4px;
+  display: none;
 }
 #roster {
   display: none;

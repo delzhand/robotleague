@@ -104,6 +104,7 @@
       team,
       cStability: 2 + Math.max(0, (Math.ceil(players[name].stability/2)) - 1),
       mStability: 2 + Math.max(0, (Math.ceil(players[name].stability/2)) - 1),
+      bStability: players[name].stability,
       accuracy: players[name].accuracy,
       jump: players[name].jump,
       speed: players[name].speed,
@@ -174,22 +175,37 @@
   function loseBall(unit) {
     unit.hasBall = false;
     unit.hasBigBall = false;
+    
+    $(`.player-${unit.name.safeCSS()}`).removeClass('has-ball');
+    $(`.player-${unit.name.safeCSS()}`).removeClass('has-big-ball');
+
+    // old
     $(`.${unit.name.safeCSS()}`).removeClass('has-ball');
     $(`.${unit.name.safeCSS()}`).removeClass('has-big-ball');
+
   }
 
   function gainBall(unit) {
-    unit.hasBall = true;
-    $(`.${unit.name.safeCSS()}`).addClass('has-ball');
     logMessage(`<b class="${unit.team}">${unit.name}</b> grabs a <b class="skimmer">skimmer</b>.`);
+    unit.hasBall = true;
+
+    $(`.player-${unit.name.safeCSS()}`).addClass('has-ball');
+
+    // old
+    $(`.${unit.name.safeCSS()}`).addClass('has-ball');
   }
 
   function gainBigBall(unit) {
+    logMessage(`<b class="${unit.team}">${unit.name}</b> grabs the <b class="sinker">sinker</b>.`);
     unit.hasBall = true;
     unit.hasBigBall = true;
+
+    $(`.player-${unit.name.safeCSS()}`).addClass('has-ball');
+    $(`.player-${unit.name.safeCSS()}`).addClass('has-big-ball');
+
+    // old
     $(`.${unit.name.safeCSS()}`).addClass('has-ball');
     $(`.${unit.name.safeCSS()}`).addClass('has-big-ball');
-    logMessage(`<b class="${unit.team}">${unit.name}</b> grabs the <b class="sinker">sinker</b>.`);
   }
 
   function scramble() {
@@ -227,6 +243,21 @@
   }
 
   function updateStability(unit) {
+    $(`.player-${unit.name.safeCSS()} .stability`).html(`${unit.cStability}`);
+    if (unit.cStability > 2) {
+      $(`.player-${unit.name.safeCSS()} .stability`).removeClass('critical');
+      $(`.player-${unit.name.safeCSS()} .stability`).removeClass('danger');
+    }
+    if (unit.cStability === 2) {
+      $(`.player-${unit.name.safeCSS()} .stability`).removeClass('critical');
+      $(`.player-${unit.name.safeCSS()} .stability`).addClass('danger');
+    }
+    if (unit.cStability <= 1) {
+      $(`.player-${unit.name.safeCSS()} .stability`).addClass('critical');
+      $(`.player-${unit.name.safeCSS()} .stability`).removeClass('danger');
+    }
+
+    // old
     $(`.${unit.name.safeCSS()} .stability`).html(`${unit.cStability}`);
     if (unit.cStability > 2) {
       $(`.${unit.name.safeCSS()} .stability`).removeClass('critical');
@@ -244,8 +275,34 @@
 
   function updatePosition(unit) {
     const posPercent = unit.position / input.fieldSize * 100;
+    
+    let realPercent = (unit.team === 'home') ? posPercent : 100 - posPercent;
+    const lane = getLane(unit);
+    let y = (15 + (lane * 35));
+    if (lane <= -1) {
+      y = -10;
+      realPercent = (unit.team === 'home') ? (10 * -lane) : 100 - (10 * -lane);
+    }
+    $(`.player-${unit.name.safeCSS()}`).css({top: y + '%', left: realPercent + '%', 'z-index': 100 + y});
+    
+    // old
     const direction = (unit.team === 'home') ? 'left' : 'right';
     $(`.${unit.name.safeCSS()}`).css(direction, posPercent + '%');
+  }
+
+  function getLane(unit) {
+    if (game.homeTeam.indexOf(unit) >= 0) {
+      return game.homeTeam.indexOf(unit);
+    }
+    if (game.awayTeam.indexOf(unit) >= 0) {
+      return game.awayTeam.indexOf(unit);
+    }
+    if (game.homeReserve.indexOf(unit) >= 0) {
+      return -1 - game.homeReserve.indexOf(unit);
+    }
+    if (game.awayReserve.indexOf(unit) >= 0) {
+      return -1 - game.awayReserve.indexOf(unit);
+    }
   }
 
   function rumble() {
@@ -371,16 +428,21 @@
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
       if (unit.cStability <= -1) {
+        unit.position = 0;
         if (unit.team === 'home' && game.homeSub) {
           game.homeSub = false;
           const sub = game.homeReserve[0];
           const teamPosition = game.homeTeam.indexOf(unit);
           game.homeTeam[teamPosition] = sub;
           game.homeReserve.push(unit);
+          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>`);
+
+          updatePosition(unit);
+          updatePosition(sub);
+
+          // old
           $(`.${sub.name.safeCSS()}`).removeClass('bench').removeClass('unit-0').addClass(`unit-${teamPosition}`);
           $(`.${unit.name.safeCSS()}`).addClass('bench').addClass('unit-0').removeClass(`unit-${teamPosition}`).css('left', '');
-          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>`);
-          console.log(game.homeTeam);
         }
         else if (unit.team === 'away' && game.awaySub) {
           game.awaySub = false;
@@ -388,10 +450,14 @@
           const teamPosition = game.awayTeam.indexOf(unit);
           game.awayTeam[teamPosition] = sub;
           game.awayReserve.push(unit);
+          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>`);
+
+          updatePosition(unit);
+          updatePosition(sub);
+
+          // old
           $(`.${sub.name.safeCSS()}`).removeClass('bench').removeClass('unit-0').addClass(`unit-${teamPosition}`);
           $(`.${unit.name.safeCSS()}`).addClass('bench').addClass('unit-0').removeClass(`unit-${teamPosition}`).css('right', '');
-          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>`);
-          console.log(game.awayTeam);
         }
         else {
           logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. No sub allowed.`);
@@ -428,24 +494,81 @@
     for(let i = 0; i < input.home.players.length; i++) {
       const unit = sortie(input.home.players[i], 'home')
       game.homeTeam.push(unit);
+      $('.new-field .playzone').append(drawPlayer(unit));
+
+      updatePosition(unit);
+
+      //old
       $('#field').append(`<div class="unit unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
     for(let i = 0; i < input.home.bench.length; i++) {
       const unit = sortie(input.home.bench[i], 'home');
       game.homeReserve.push(unit);
+      $('.new-field .playzone').append(drawPlayer(unit));
+      updatePosition(unit);
+
+      //old
       $('#field').append(`<div class="unit bench unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
     for(let i = 0; i < input.away.players.length; i++) {
       const unit = sortie(input.away.players[i], 'away')
       game.awayTeam.push(unit);
+      $('.new-field .playzone').append(drawPlayer(unit));
+      updatePosition(unit);
+
+      //old
       $('#field').append(`<div class="unit unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
     for(let i = 0; i < input.away.bench.length; i++) {
       const unit = sortie(input.away.bench[i], 'away');
       game.awayReserve.push(unit);
+      $('.new-field .playzone').append(drawPlayer(unit));
+      updatePosition(unit);
+
+      //old
       $('#field').append(`<div class="unit bench unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
+  }
 
+  function updatePlayer(unit) {
+    $(`.player-${unit.name.safeCSS()}`).css({top: (15 + (i * 35)) + '%', left: '0%', 'z-index': 100 + (15 + (i * 35))});
+  }
+
+  function drawPlayer(unit) {
+    const output = `
+      <div class="field-pointer player-${unit.name.safeCSS()}" style="left: 0%; top: 0%; z-index: 0">
+        <div class="field-player">
+          <div class="flag">
+            <div class="team ${unit.team}">${unit.team === 'home' ? '▼' : '▲'}</div>
+            <div class="player-name">
+              <span class="short">${unit.name.substr(0, 12)}</span>
+              <span class="full">${unit.name}</span>
+            </div>
+            <div class="stability">${unit.cStability}</div>
+          </div>
+          <div class="stats">
+            <div class="stat"><span class="label">J</span> ${drawStat(unit.jump)}</div>
+            <div class="stat"><span class="label">A</span> ${drawStat(unit.accuracy)}</div>
+            <div class="stat"><span class="label">M</span> ${drawStat(unit.speed)}</div>
+            <div class="stat"><span class="label">S</span> ${drawStat(unit.bStability)}</div>
+          </div>
+        </div>      
+      </div>
+      `;
+    return output;
+  }
+
+  function drawStat(count) {
+    let output = '';
+    for(let i = 0; i < 6; i++) {
+      if (i < count) {
+        output += '◆';
+      }
+      else {
+        output += '<span class="unfilled">◇</span>';
+      }
+    }
+    return output;
   }
 
   function markField() {
@@ -454,6 +577,14 @@
     for(let i = 1; i < input.fieldSize; i++) {
       $('#field').append(`<div class="marker away" style="left: ${i/input.fieldSize*100}%">${i}</div>`);
       $('#field').append(`<div class="marker home" style="left: ${100 - (i/input.fieldSize*100)}%">${i}</div>`);
+    }
+
+    //new
+    $('.new-field .endzone .team-paint').html(input.home.name);
+    $('.new-field .endzone:last .team-paint').html(input.away.name);
+    for(let i = 1; i < input.fieldSize; i++) {
+      $('.new-field .playzone').append(`<div class="marker-line away" style="left: ${i/input.fieldSize*100}%">${i}</div>`);
+      $('.new-field .playzone').append(`<div class="marker-line home" style="left: ${100 - (i/input.fieldSize*100)}%">${i}</div>`);
     }
   }
 
@@ -560,6 +691,12 @@
 <body>
 
 <div class="container">
+  <div class="new-field">
+    <div class="playzone"></div>
+    <div class="endzone"><div class="team-paint">Home</div><div class="goalpost"></div></div>
+    <div class="endzone"><div class="team-paint">Away</div><div class="goalpost"></div></div>
+  </div>
+
   <a id="toggle-roster" onclick="toggleRoster()">Show/Hide Roster</a>
 
   <div id="roster" class="hidden">
