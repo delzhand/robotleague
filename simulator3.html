@@ -19,6 +19,10 @@
   q = getUrlVars();
   const input = matches[q.match];
 
+  let timer = 0;
+  let paused = true;
+  let interval = null;
+
   const game = {
     round: 1,
     phase: 'tossUp',
@@ -40,11 +44,56 @@
     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
     for(var i = 0; i < hashes.length; i++)
     {
-        hash = hashes[i].split('=');
-        vars.push(hash[0]);
-        vars[hash[0]] = hash[1];
+      hash = hashes[i].split('=');
+      vars.push(hash[0]);
+      vars[hash[0]] = hash[1];
     }
     return vars;
+  }
+
+  function play() {
+    $('.controls .pause').show();
+    $('.controls .play').hide();
+    interval = setInterval(incrementTimer, 100);
+
+  }
+
+  function pause() {
+    $('.controls .play').show();
+    $('.controls .pause').hide();
+    clearInterval(interval);
+  }
+
+  function fastforward() {
+    clearInterval(interval);
+    $('.controls .play').show();
+    $('.controls .pause').hide();
+    if (!isGameOver()) {
+      timerReset();
+    }
+    else {
+      gameOver();
+    }
+  }
+
+  function incrementTimer() {
+    if (!isGameOver()) {
+      timer+=2;
+      $('#timer .inner').css('width', timer + '%');
+      if (timer === 100) {
+        timerReset();
+      }
+    }
+    else {
+      gameOver();
+    }
+  }
+
+  function timerReset() {
+    $('#timer .inner').remove();
+    $('#timer').append('<div class="inner"></div>');
+    timer = 0;
+    next();
   }
 
   function getRandomInt(max) {
@@ -335,7 +384,7 @@
         target.unit.cStability -= 2;
         if (target.unit.cStability <= 0) {
           loseBall(target.unit);
-          updateScore(unit.team, 2);
+          updateScore(unit, 2);
         }
         updateStability(target.unit);
         if (!target.unit.out) {
@@ -436,11 +485,6 @@
 
   }
 
-  function gameOver() {
-    $('.round').html('Post-game');
-    $('#next-button').remove();
-  }
-
   function init() {
     markField();
     launchPlayers();
@@ -486,7 +530,7 @@
           <div class="flag">
             <div class="team ${unit.team}">${unit.team === 'home' ? '▼' : '▲'}</div>
             <div class="player-name">
-              <span class="short">${unit.name.substr(0, 12)}</span>
+              <span class="short">${shortName(unit)}</span>
               <span class="full">${unit.name}</span>
             </div>
             <div class="stability">${unit.cStability}</div>
@@ -501,6 +545,14 @@
       </div>
       `;
     return output;
+  }
+
+  function shortName(unit) {
+    const maxLength = 17;
+    if (unit.name.length > maxLength) {
+      return unit.name.substr(0, maxLength - 3) + '...';
+    }
+    return unit.name;
   }
 
   function drawStat(count) {
@@ -550,12 +602,30 @@
 
   }
 
+  function isGameOver() {
+    return game.round > input.totalRounds && game.homeScore != game.awayScore;
+  }
+
+  function gameOver() {
+    $('.round').html('Post-game');
+    $('#progress').slideToggle();
+    $('#output').addClass("done");
+    if (game.homeScore > game.awayScore) {
+      $('#final-result').html(input.home.name + ' Win!').addClass('home');
+    }
+    else {
+      $('#final-result').html(input.away.name + ' Win!').addClass('away');
+    }
+    $('#final-result').slideToggle();
+
+  }
+
   function next() {
     switch (game.phase) {
       case 'tossUp':
         checkOuts();
-        checkSubs();
         logMessage(`Round ${game.round}`, "round-start");
+        checkSubs();
         tossUp();
         game.phase = 'scramble';
         break;
@@ -565,7 +635,7 @@
         break;
       case 'shootout':
         shootout();
-        if (game.round >= input.totalRounds && game.homeScore != game.awayScore) {
+        if (isGameOver()) {
           gameOver();
         }
         else {
@@ -587,16 +657,34 @@
     <div class="endzone"><div class="team-paint">Home</div><div class="goalpost"></div></div>
     <div class="endzone"><div class="team-paint">Away</div><div class="goalpost"></div></div>
   </div>
+  <div class="field-depth"></div>
+
+  <div id="final-result" style="display: none;"></div>
 
   <div id="scoreboard" class="clearfix">
     <div class="col col-xs-6">
-      <a id="next-button" onclick="next()">Next</a>
     </div>
     <div class="col col-xs-6">
       <div class="score">Home: <span class="home-score">0</span> | Away: <span class="away-score">0</span></div>
       <div class="round">Pre-game</div>
     </div>
   </div>
+
+  <div id="progress">
+    <div class="controls">
+      <div class="play" onclick="play()"></div>
+      <div class="pause" onclick="pause()" style="display: none;"></div>
+    </div>
+  
+    <div id="timer">
+      <div class="inner" style="width: 0%;"></div>
+    </div>
+  
+    <div class="controls">
+      <div class="ff" onclick="fastforward()"></div>
+    </div>
+  </div>
+
 
   <div id="output" class="log-frame">
     <div class="log-label">Log</div>
@@ -608,12 +696,6 @@
 
 <script>
   init();
-
-  // for(let i = 0; i < p.length; i++) {
-  //   const x = `'${p[i][0].replace('\'', '\\\'')}': {stability: ${getRandomInt(5)+1}, accuracy: ${getRandomInt(5)+1}, speed: ${getRandomInt(5)+1}, jump: ${getRandomInt(5)+1}, team: '${p[i][1].replace('\'', '\\\'')}'},<br/>`;
-  //   $('#p').append(x);
-  // }
-
 </script>
 </body>
 <html>

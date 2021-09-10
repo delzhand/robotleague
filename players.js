@@ -1,3 +1,9 @@
+// for(let i = 0; i < p.length; i++) {
+//   const x = `'${p[i][0].replace('\'', '\\\'')}': {stability: ${getRandomInt(5)+1}, accuracy: ${getRandomInt(5)+1}, speed: ${getRandomInt(5)+1}, jump: ${getRandomInt(5)+1}, team: '${p[i][1].replace('\'', '\\\'')}'},<br/>`;
+//   $('#p').append(x);
+// }
+
+
 const p = [
 ['Glasgow Hammer', 'Western Deluge Wayfarers'],
 ['Calamity Rescue', 'Western Deluge Wayfarers'],
