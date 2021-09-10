@@ -178,11 +178,6 @@
     
     $(`.player-${unit.name.safeCSS()}`).removeClass('has-ball');
     $(`.player-${unit.name.safeCSS()}`).removeClass('has-big-ball');
-
-    // old
-    $(`.${unit.name.safeCSS()}`).removeClass('has-ball');
-    $(`.${unit.name.safeCSS()}`).removeClass('has-big-ball');
-
   }
 
   function gainBall(unit) {
@@ -190,9 +185,6 @@
     unit.hasBall = true;
 
     $(`.player-${unit.name.safeCSS()}`).addClass('has-ball');
-
-    // old
-    $(`.${unit.name.safeCSS()}`).addClass('has-ball');
   }
 
   function gainBigBall(unit) {
@@ -202,10 +194,6 @@
 
     $(`.player-${unit.name.safeCSS()}`).addClass('has-ball');
     $(`.player-${unit.name.safeCSS()}`).addClass('has-big-ball');
-
-    // old
-    $(`.${unit.name.safeCSS()}`).addClass('has-ball');
-    $(`.${unit.name.safeCSS()}`).addClass('has-big-ball');
   }
 
   function scramble() {
@@ -256,21 +244,6 @@
       $(`.player-${unit.name.safeCSS()} .stability`).addClass('critical');
       $(`.player-${unit.name.safeCSS()} .stability`).removeClass('danger');
     }
-
-    // old
-    $(`.${unit.name.safeCSS()} .stability`).html(`${unit.cStability}`);
-    if (unit.cStability > 2) {
-      $(`.${unit.name.safeCSS()} .stability`).removeClass('critical');
-      $(`.${unit.name.safeCSS()} .stability`).removeClass('danger');
-    }
-    if (unit.cStability === 2) {
-      $(`.${unit.name.safeCSS()} .stability`).removeClass('critical');
-      $(`.${unit.name.safeCSS()} .stability`).addClass('danger');
-    }
-    if (unit.cStability <= 1) {
-      $(`.${unit.name.safeCSS()} .stability`).addClass('critical');
-      $(`.${unit.name.safeCSS()} .stability`).removeClass('danger');
-    }
   }
 
   function updatePosition(unit) {
@@ -284,10 +257,6 @@
       realPercent = (unit.team === 'home') ? (10 * -lane) : 100 - (10 * -lane);
     }
     $(`.player-${unit.name.safeCSS()}`).css({top: y + '%', left: realPercent + '%', 'z-index': 100 + y});
-    
-    // old
-    const direction = (unit.team === 'home') ? 'left' : 'right';
-    $(`.${unit.name.safeCSS()}`).css(direction, posPercent + '%');
   }
 
   function getLane(unit) {
@@ -378,10 +347,6 @@
         logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
         target.unit.cStability -= 1;
         if (target.unit.cStability <= 0) {
-          // target.unit.position = 0;
-          // target.unit.out += 1 + -target.unit.cStability;
-          // console.log(target.unit.out);
-          // logMessage(`<b class="${target.unit.team}">${target.unit.name}</b> was knocked out for ${target.unit.out + 1} turns.`);
           loseBall(target.unit);
         }
         updateStability(target.unit);
@@ -439,10 +404,6 @@
 
           updatePosition(unit);
           updatePosition(sub);
-
-          // old
-          $(`.${sub.name.safeCSS()}`).removeClass('bench').removeClass('unit-0').addClass(`unit-${teamPosition}`);
-          $(`.${unit.name.safeCSS()}`).addClass('bench').addClass('unit-0').removeClass(`unit-${teamPosition}`).css('left', '');
         }
         else if (unit.team === 'away' && game.awaySub) {
           game.awaySub = false;
@@ -454,10 +415,6 @@
 
           updatePosition(unit);
           updatePosition(sub);
-
-          // old
-          $(`.${sub.name.safeCSS()}`).removeClass('bench').removeClass('unit-0').addClass(`unit-${teamPosition}`);
-          $(`.${unit.name.safeCSS()}`).addClass('bench').addClass('unit-0').removeClass(`unit-${teamPosition}`).css('right', '');
         }
         else {
           logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. No sub allowed.`);
@@ -497,36 +454,24 @@
       $('.new-field .playzone').append(drawPlayer(unit));
 
       updatePosition(unit);
-
-      //old
-      $('#field').append(`<div class="unit unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
     for(let i = 0; i < input.home.bench.length; i++) {
       const unit = sortie(input.home.bench[i], 'home');
       game.homeReserve.push(unit);
       $('.new-field .playzone').append(drawPlayer(unit));
       updatePosition(unit);
-
-      //old
-      $('#field').append(`<div class="unit bench unit-${i} team-home ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
     for(let i = 0; i < input.away.players.length; i++) {
       const unit = sortie(input.away.players[i], 'away')
       game.awayTeam.push(unit);
       $('.new-field .playzone').append(drawPlayer(unit));
       updatePosition(unit);
-
-      //old
-      $('#field').append(`<div class="unit unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
     for(let i = 0; i < input.away.bench.length; i++) {
       const unit = sortie(input.away.bench[i], 'away');
       game.awayReserve.push(unit);
       $('.new-field .playzone').append(drawPlayer(unit));
       updatePosition(unit);
-
-      //old
-      $('#field').append(`<div class="unit bench unit-${i} team-away ${unit.name.safeCSS()}">${i + 1}<div class="name">${unit.name.substr(0, 18)}<div class="stability">${unit.cStability}</div></div>`);
     }
   }
 
@@ -572,14 +517,6 @@
   }
 
   function markField() {
-    $('#field').append(`<div class="team-name home">${input.home.name}</div>`);
-    $('#field').append(`<div class="team-name away">${input.away.name}</div>`);
-    for(let i = 1; i < input.fieldSize; i++) {
-      $('#field').append(`<div class="marker away" style="left: ${i/input.fieldSize*100}%">${i}</div>`);
-      $('#field').append(`<div class="marker home" style="left: ${100 - (i/input.fieldSize*100)}%">${i}</div>`);
-    }
-
-    //new
     $('.new-field .endzone .team-paint').html(input.home.name);
     $('.new-field .endzone:last .team-paint').html(input.away.name);
     for(let i = 1; i < input.fieldSize; i++) {
@@ -590,12 +527,6 @@
 
   function renderRoster() {
     let groups = [game.homeTeam, game.homeReserve, game.awayTeam, game.awayReserve];
-    for (let i = 0; i < groups.length; i++) {
-      for(let j = 0; j < groups[i].length; j++) {
-        const unit = groups[i][j];
-        renderPlayerProfile(unit);
-      }
-    }
 
     let homeRating = 0;
     groups = [game.homeTeam, game.homeReserve];
@@ -619,37 +550,6 @@
 
   }
 
-  function renderPlayerProfile(unit) {
-    let $team = $('#roster .home.col');
-    if (unit.team === 'away') {
-      $team = $('#roster .away.col');
-    }
-    const output = `
-      <div class="player-profile ${unit.team}">
-        <div class="name">${unit.name}</div>
-        <div class="name">${unit.mStability + unit.speed + unit.accuracy + unit.jump}★</div>
-        <div class="stat"><span class="label">Stability</span>: ${renderStars(unit.mStability)}</div>
-        <div class="stat"><span class="label">Speed</span>: ${renderStars(unit.speed)}</div>
-        <div class="stat"><span class="label">Accuracy</span>: ${renderStars(unit.accuracy)}</div>
-        <div class="stat"><span class="label">Jump</span>: ${renderStars(unit.jump)}</div>
-      </div>
-    `;
-    $team.append(output);
-  }
-
-  function renderStars(count) {
-    let output = '';
-    for(let i = 0; i < 6; i++) {
-      if (i < count) {
-        output += '★';
-      }
-      else {
-        output += '<span class="faded">☆</span>';
-      }
-    }
-    return output;
-  }
-
   function next() {
     switch (game.phase) {
       case 'tossUp':
@@ -661,13 +561,8 @@
         break;
       case 'scramble':
         scramble();
-        // game.phase = 'rumble';
         game.phase = 'shootout';
         break;
-      // case 'rumble':
-      //   rumble();
-      //   game.phase = 'shootout';
-      //   break;
       case 'shootout':
         shootout();
         if (game.round >= input.totalRounds && game.homeScore != game.awayScore) {
@@ -681,10 +576,6 @@
     }
   }
 
-  function toggleRoster() {
-    $('#roster').slideToggle();
-  }
-
 </script>
 <title>Titan League Blastball | Match Visualizer</title>
 </head>
@@ -695,24 +586,6 @@
     <div class="playzone"></div>
     <div class="endzone"><div class="team-paint">Home</div><div class="goalpost"></div></div>
     <div class="endzone"><div class="team-paint">Away</div><div class="goalpost"></div></div>
-  </div>
-
-  <a id="toggle-roster" onclick="toggleRoster()">Show/Hide Roster</a>
-
-  <div id="roster" class="hidden">
-    <div class="row">
-      <div class="home col col-xs-6">
-        <div class="teamname">Home</div>
-      </div>
-      <div class="away col col-xs-6">
-        <div class="teamname">Away</div>
-      </div>
-    </div>
-  </div>
-
-  <div id="field">
-    <div class="goal goal-a"></div>
-    <div class="goal goal-b"></div>
   </div>
 
   <div id="scoreboard" class="clearfix">
