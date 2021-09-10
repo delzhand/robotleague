@@ -55,7 +55,6 @@
     $('.controls .pause').show();
     $('.controls .play').hide();
     interval = setInterval(incrementTimer, 100);
-
   }
 
   function pause() {
@@ -607,6 +606,7 @@
   }
 
   function gameOver() {
+    clearInterval(interval);
     $('.round').html('Post-game');
     $('#progress').slideToggle();
     $('#output').addClass("done");
