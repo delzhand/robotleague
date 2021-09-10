@@ -363,23 +363,23 @@
     const shot = makeShot(target.distance, unit.accuracy);
     if (target.type === 'goal') {
       if (shot.success && unit.hasBigBall) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}%).`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
         updateScore(unit, 5);
       }
       else if (shot.success) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
         updateScore(unit, 3);
       }
       else if (unit.hasBigBall) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}%).`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
       }
       else {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
       }
     }
     else {
       if (shot.success && unit.hasBigBall) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}%).`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
         target.unit.cStability -= 2;
         if (target.unit.cStability <= 0) {
           loseBall(target.unit);
@@ -392,7 +392,7 @@
         updatePosition(target.unit);
       }
       else if (shot.success) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
         target.unit.cStability -= 1;
         if (target.unit.cStability <= 0) {
           loseBall(target.unit);
@@ -404,10 +404,10 @@
         updatePosition(target.unit);
       }
       else if (unit.hasBigBall) {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}%).`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
       }
       else {
-        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}%).`);
+        logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with a <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
       }
     }
     loseBall(unit);
@@ -420,7 +420,8 @@
     let modifiedDistance = distance - successes;
     let hitRate = baseChance + (flexChance * (1 - (modifiedDistance/input.fieldSize)));
     hitRate *= 100;
-    return {success: getRandomInt(100) >= hitRate, rate: hitRate};
+    let r = getRandomInt(100);
+    return {success: r <= hitRate, rate: hitRate, r};
   }
 
   function checkOuts() {
@@ -440,7 +441,7 @@
     let allPlayers = getAllPlayers();
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
-      if (unit.cStability <= -1) {
+      if (unit.cStability <= 0) {
         unit.position = 0;
         if (unit.team === 'home' && game.homeSub) {
           game.homeSub = false;
