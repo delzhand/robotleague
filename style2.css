@@ -7,8 +7,22 @@ body {
   font-family: 'Josefin Sans', sans-serif;
 }
 
+.sideline {
+  margin: 10px 0;
+  display: flex;
+  position: relative;
+  z-index: 5;
+}
+.sideline > div {
+  display: flex;
+  flex: 0 1 auto;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+}
+
 .new-field {
-  margin-top: 200px;
+  margin-top: 70px;
   background: rgb(65, 90, 74);
   height: 200px;
   width: 100%;
@@ -22,6 +36,60 @@ body {
 .field-depth {
   background-color: rgb(80, 60, 42);
   height: 20px;
+}
+
+.player-icon {
+  position: absolute;
+  transition-duration: 1s;
+  height: 0;
+  width: 0;
+}
+.player-icon .arrow {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  background-color: rgb(219, 69, 49);
+  background-image: url('./play.svg');
+  background-size: 64%;
+  background-repeat: no-repeat;
+  background-position: 70% center;
+  box-sizing: content-box;
+  border: 2px solid #FFF;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+.player-icon.away .arrow {
+  background-color: rgb(49, 117, 219);
+  transform: translate(-50%, -50%) scaleX(-1);
+}
+.player-icon .name,
+.player-icon .stability {
+  padding: 2px 4px 1px;
+  color: #FFF;
+  font-weight: bold;
+  font-size: 10px;
+  position: absolute;
+  top: 6px;
+}
+.player-icon .name {
+  right: -2px;
+  background: black;
+}
+.player-icon .stability {
+  left: 2px;
+  background: rgb(27, 177, 79);
+}
+.player-icon .stability.danger {
+  background: rgb(255, 239, 10);
+}
+.player-icon .stability.critical {
+  background: rgb(255, 10, 10);
+}
+.player-icon.has-ball .arrow {
+  border: 6px solid rgb(228, 162, 39);
+}
+.player-icon.has-big-ball .arrow {
+  border: 6px solid rgb(137, 39, 228);
 }
 
 .field-pointer {
@@ -107,12 +175,17 @@ body {
 .field-player {
   cursor: help;
   color: #FFF;
-  display: inline-block;
+  position: relative;
 }
 .field-player .flag {
-  background-color: black;
+  background-color: rgb(219, 69, 49);
   border-radius: 5px;
-  border: 1px solid #666;
+  border: 1px solid #000;
+  width: 100%;
+  font-size: 12px;
+}
+.field-player.away .flag {
+  background-color:rgb(49, 117, 219);
 }
 .field-player .flag .player-name .full {
   display: none;
@@ -149,13 +222,14 @@ body {
   padding-left: 6px;
   padding-right: 6px;
   height: 0;
+  width: 122px;
   overflow: hidden;
   transition-duration: .2s;
   display: inline-block;
-  margin-left: 32px;
-  margin-top: -2px;
   z-index: -1;
-  position: relative;
+  position: absolute;
+  top: 20px;
+  left: 2px;
 }
 .field-player:hover .stats .name .short {
   display: none;
@@ -164,10 +238,13 @@ body {
   display: none;
 }
 .field-player:hover .stats {
-  height: 96px;
+  height: 108px;
 }
 .field-player .stats .stat {
   color: gold;
+}
+.field-player .stats .stat:first-of-type {
+  margin-top: 6px;
 }
 .field-player .stats .stat .label {
   color: #FFF;
@@ -176,7 +253,6 @@ body {
   width: 22px;
   height: 22px;
   text-align: center;
-  transform: rotateZ(90deg);
 }
 .field-player .stats .stat .unfilled {
   color: #FFF;
