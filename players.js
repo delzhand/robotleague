@@ -1,8 +1,17 @@
-// for(let i = 0; i < p.length; i++) {
-//   const x = `'${p[i][0].replace('\'', '\\\'')}': {stability: ${getRandomInt(5)+1}, accuracy: ${getRandomInt(5)+1}, speed: ${getRandomInt(5)+1}, jump: ${getRandomInt(5)+1}, team: '${p[i][1].replace('\'', '\\\'')}'},<br/>`;
-//   $('#p').append(x);
-// }
-
+function generate() {
+  $('body').append('<div id="player-gen"></div>');
+  for(let i = 0; i < p.length; i++) {
+    const x = `'${p[i][0].replace('\'', '\\\'')}': {
+      stability: ${getRandomInt(5)+1},
+      accuracy: ${getRandomInt(5)+1},
+      speed: ${getRandomInt(5)+1},
+      jump: ${getRandomInt(5)+1},
+      team: '${p[i][1].replace('\'', '\\\'')}',
+      initials: ''
+    },<br/>`;
+    $('#player-gen').append(x);
+  }
+}
 
 const p = [
 ['Glasgow Hammer', 'Western Deluge Wayfarers'],
@@ -125,6 +134,36 @@ const p = [
 ['Radical Negative', 'Crab Nebula Functions'],
 ['Approaching Infinity', 'Crab Nebula Functions'],
 ['Graphpaper Graffito', 'Crab Nebula Functions'],
+['Geroy Zamka', 'Lib-Com Transient Albatrosses'],
+['Disco Cabinet ', 'Lib-Com Transient Albatrosses'],
+['Fearless Bogatyr', 'Lib-Com Transient Albatrosses'],
+['Out and About', 'Lib-Com Transient Albatrosses'],
+['Full Spectrum Jacket', 'Lib-Com Transient Albatrosses'],
+['Sun Wu Tonne', 'Zhong-Rossíyskoy Compact Dragons'],
+['Pride of Tsou', 'Zhong-Rossíyskoy Compact Dragons'],
+['OX-Zodiac', 'Zhong-Rossíyskoy Compact Dragons'],
+['APT//HAX', 'Zhong-Rossíyskoy Compact Dragons'],
+['Polaris Pointer', 'Zhong-Rossíyskoy Compact Dragons'],
+['ORB-Dhullaghan', 'Exodian Ice Creams'],
+['Maverick Punter', 'Exodian Ice Creams'],
+['Alloy Item Mutable', 'Exodian Ice Creams'],
+['Ruby Shivalik', 'Exodian Ice Creams'],
+['Hunky Dory', 'Exodian Ice Creams'],
+['Ifandor', 'Habitat Scouting Lobsters'],
+['Amsterdam Reach', 'Habitat Scouting Lobsters'],
+['Le Batteur', 'Habitat Scouting Lobsters'],
+['Jet Vintage', 'Habitat Scouting Lobsters'],
+['Kepler Golem', 'Habitat Scouting Lobsters'],
+['Strek Ledemate', 'New Zion Spirals'],
+['Anansi 7', 'New Zion Spirals'],
+['Equatorial Bolt', 'New Zion Spirals'],
+['AFR0-Drilla', 'New Zion Spirals'],
+['Platinum Lioness', 'New Zion Spirals'],
+['Mrnhyvr-44', 'Pthasperang Senior Quanqos'],
+['Make a Right Angle', 'Pthasperang Senior Quanqos'],
+['Ulluad Rijay', 'Pthasperang Senior Quanqos'],
+['Wight Wail', 'Pthasperang Senior Quanqos'],
+['Aura Conduit Parthi', 'Pthasperang Senior Quanqos'],
 ];
 const players = {
   'Glasgow Hammer': {stability: 5, accuracy: 3, speed: 5, jump: 2, team: 'Western Deluge Wayfarers', initials: 'GHM'},
@@ -247,5 +286,34 @@ const players = {
   'Radical Negative': {stability: 2, accuracy: 4, speed: 1, jump: 2, team: 'Crab Nebula Functions', initials: 'RAD'},
   'Approaching Infinity': {stability: 1, accuracy: 3, speed: 5, jump: 2, team: 'Crab Nebula Functions', initials: 'INF'},
   'Graphpaper Graffito': {stability: 4, accuracy: 1, speed: 3, jump: 3, team: 'Crab Nebula Functions', initials: 'GG'},
+  'Geroy Zamka': { stability: 3, accuracy: 4, speed: 4, jump: 5, team: 'Lib-Com Transient Albatrosses', initials: 'GER' },
+  'Disco Cabinet ': { stability: 1, accuracy: 5, speed: 1, jump: 5, team: 'Lib-Com Transient Albatrosses', initials: 'DIS' },
+  'Fearless Bogatyr': { stability: 5, accuracy: 2, speed: 3, jump: 3, team: 'Lib-Com Transient Albatrosses', initials: 'BOG' },
+  'Out and About': { stability: 2, accuracy: 2, speed: 3, jump: 5, team: 'Lib-Com Transient Albatrosses', initials: 'OUT' },
+  'Full Spectrum Jacket': { stability: 4, accuracy: 5, speed: 5, jump: 2, team: 'Lib-Com Transient Albatrosses', initials: 'FSJ' },
+  'Sun Wu Tonne': { stability: 1, accuracy: 5, speed: 5, jump: 2, team: 'Zhong-Rossíyskoy Compact Dragons', initials: 'SUN' },
+  'Pride of Tsou': { stability: 4, accuracy: 3, speed: 2, jump: 1, team: 'Zhong-Rossíyskoy Compact Dragons', initials: 'TSO' },
+  'OX-Zodiac': { stability: 3, accuracy: 4, speed: 5, jump: 1, team: 'Zhong-Rossíyskoy Compact Dragons', initials: 'OXZ' },
+  'APT//HAX': { stability: 4, accuracy: 2, speed: 3, jump: 4, team: 'Zhong-Rossíyskoy Compact Dragons', initials: 'APT' },
+  'Polaris Pointer': { stability: 4, accuracy: 1, speed: 2, jump: 3, team: 'Zhong-Rossíyskoy Compact Dragons', initials: 'POL' },
+  'ORB-Dhullaghan': { stability: 3, accuracy: 1, speed: 5, jump: 5, team: 'Exodian Ice Creams', initials: 'ORB' },
+  'Maverick Punter': { stability: 5, accuracy: 2, speed: 5, jump: 3, team: 'Exodian Ice Creams', initials: 'MAV' },
+  'Alloy Item Mutable': { stability: 4, accuracy: 2, speed: 5, jump: 4, team: 'Exodian Ice Creams', initials: 'AIM' },
+  'Ruby Shivalik': { stability: 1, accuracy: 4, speed: 3, jump: 1, team: 'Exodian Ice Creams', initials: 'SHV' },
+  'Hunky Dory': { stability: 4, accuracy: 2, speed: 1, jump: 4, team: 'Exodian Ice Creams', initials: 'HDO' },
+  'Ifandor': { stability: 2, accuracy: 1, speed: 4, jump: 4, team: 'Habitat Scouting Lobsters', initials: 'IFA' },
+  'Amsterdam Reach': { stability: 1, accuracy: 5, speed: 2, jump: 1, team: 'Habitat Scouting Lobsters', initials: 'AMS' },
+  'Le Batteur': { stability: 4, accuracy: 3, speed: 5, jump: 2, team: 'Habitat Scouting Lobsters', initials: 'BAT' },
+  'Jet Vintage': { stability: 4, accuracy: 3, speed: 3, jump: 3, team: 'Habitat Scouting Lobsters', initials: 'JET' },
+  'Kepler Golem': { stability: 2, accuracy: 4, speed: 4, jump: 2, team: 'Habitat Scouting Lobsters', initials: 'KEP' },
+  'Strek Ledemate': { stability: 5, accuracy: 3, speed: 3, jump: 2, team: 'New Zion Spirals', initials: 'SL' },
+  'Anansi 7': { stability: 1, accuracy: 4, speed: 5, jump: 5, team: 'New Zion Spirals', initials: 'AN7' },
+  'Equatorial Bolt': { stability: 2, accuracy: 4, speed: 2, jump: 3, team: 'New Zion Spirals', initials: 'EQB' },
+  'AFR0-Drilla': { stability: 1, accuracy: 5, speed: 1, jump: 5, team: 'New Zion Spirals', initials: 'AFR' },
+  'Platinum Lioness': { stability: 1, accuracy: 2, speed: 4, jump: 4, team: 'New Zion Spirals', initials: 'PLT' },
+  'Mrnhyvr-44': { stability: 2, accuracy: 2, speed: 3, jump: 1, team: 'Pthasperang Senior Quanqos', initials: 'M44' },
+  'Make a Right Angle': { stability: 4, accuracy: 3, speed: 1, jump: 3, team: 'Pthasperang Senior Quanqos', initials: 'MRA' },
+  'Ulluad Rijay': { stability: 4, accuracy: 2, speed: 1, jump: 3, team: 'Pthasperang Senior Quanqos', initials: 'ULL' },
+  'Wight Wail': { stability: 4, accuracy: 3, speed: 3, jump: 3, team: 'Pthasperang Senior Quanqos', initials: 'WW' },
+  'Aura Conduit Parthi': { stability: 2, accuracy: 3, speed: 1, jump: 4, team: 'Pthasperang Senior Quanqos', initials: 'ACP' },
 };
-
