@@ -445,7 +445,7 @@
           const teamPosition = game.homeTeam.indexOf(unit);
           game.homeTeam[teamPosition] = sub;
           game.homeReserve.push(unit);
-          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>`);
+          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>.`);
 
           updatePosition(unit);
           updatePosition(sub);
@@ -461,7 +461,7 @@
           const teamPosition = game.awayTeam.indexOf(unit);
           game.awayTeam[teamPosition] = sub;
           game.awayReserve.push(unit);
-          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>`);
+          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. Subbing in <b class="${unit.team}">${sub.name}</b>.`);
 
           updatePosition(unit);
           updatePosition(sub);
@@ -562,6 +562,7 @@
     const output = `
       <div class="player-icon player-${unit.name.safeCSS()} ${unit.team}" style="left: 0%; top: 0%;">
         <div class="arrow"></div>
+        <div class="robot"><div class="graphic"></div></div>
         <div class="name">${unit.initials}</div>
         <div class="stability">${unit.cStability}</div>
       </div>

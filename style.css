@@ -1,3 +1,8 @@
+@keyframes sprite {
+  from { background-position: 0px; }
+  to { background-position: -64px; }
+}
+
 body {
   overflow-x: hidden;
   background: url(bg.png);
@@ -50,6 +55,31 @@ body {
   height: 0;
   width: 0;
 }
+.player-icon .robot {
+  transform: 
+    perspective(14cm)
+    rotateX(-25deg)
+    /* scale(1.5) */
+  ;
+  transform-origin: bottom center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  zoom: 125%;
+}
+.player-icon .robot .graphic {
+  height: 32px;
+  width: 32px;
+  position: absolute;
+  bottom: 0;
+  left: -16px;
+  background-image: url('./sprite.png');
+  transform: scaleX(-1);
+  animation-name: sprite; 
+  animation-duration: 1.25s;
+  animation-timing-function: steps(2);
+  animation-iteration-count: infinite;
+}
 .player-icon .arrow {
   height: 30px;
   width: 30px;
@@ -64,6 +94,12 @@ body {
   transform: translate(-50%, -50%);
   z-index: 2;
 }
+.player-icon.away .robot .graphic {
+  background-image: url('./sprite.png');
+  transform: scaleX(1);
+  filter: hue-rotate(-132deg);
+}
+
 .player-icon.away .arrow {
   background-color: rgb(49, 117, 219);
   transform: translate(-50%, -50%) scaleX(-1);
@@ -179,7 +215,7 @@ body {
 }
 
 .field-player {
-  cursor: help;
+  cursor: pointer;
   color: #FFF;
   position: relative;
 }
