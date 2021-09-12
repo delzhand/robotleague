@@ -1,53 +1,55 @@
-const matches = [
-  {
-    randomSeed: 'test',
-    fieldSize: 12,
-    totalRounds: 5,
-    balls: 3,
-    bigBalls: 1,
-    home: {
-      name: 'Wayfarers',
-      players: ['Glasgow Hammer', 'Calamity Rescue', 'Leuchtturm Hans'],
-      bench: ['Hazard Kraken', 'Duster Catapult']
-    },
-    away: {
-      name: 'Rovers',
-      players: ['Legion Red', 'Vicious Whisper', 'King Bull'],
-      bench: ['Ultimate Gun-Head', 'Astro Nergal']
-    }
+const matches = {
+  0: {
+    home: 'Wayfarers',
+    away: 'Fireballs',
   },
-  {
-    randomSeed: 'test',
-    fieldSize: 12,
-    totalRounds: 5,
-    balls: 3,
-    bigBalls: 1,
-    home: {
-      name: 'Rovers',
-      players: ['Legion Red', 'Vicious Whisper', 'King Bull'],
-      bench: ['Ultimate Gun-Head', 'Astro Nergal']
-    },
-    away: {
-      name: 'Lovers',
-      players: ['Guardian Preserver', 'Electro Blossom', 'Beautiful Amavasya'],
-      bench: ['Shadow Virago', 'Lotus of Delight']
-    }
+  1: {
+    home: 'Wayfarers',
+    away: 'Fireballs',
+    update: 2
   },
-  {
-    randomSeed: 'test',
-    fieldSize: 12,
-    totalRounds: 5,
-    balls: 3,
-    bigBalls: 1,
-    home: {
-      name: 'Lovers',
-      players: ['Guardian Preserver', 'Electro Blossom', 'Beautiful Amavasya'],
-      bench: ['Shadow Virago', 'Lotus of Delight']
-    },
-    away: {
-      name: 'Wayfarers',
-      players: ['Saxophone Blue', 'Melodious Mistake', 'Queen\'s Gambit'],
-      bench: ['Radiant Memento', 'Weeping Willow']
-    },
+  c5: {
+    home: 'Kangaroos',
+    away: 'Spirals'
+  },
+  c6: {
+    home: 'Wayfarers',
+    away: 'Giants'
+  },
+  c7: {
+    home: 'Tornadoes',
+    away: 'Fireballs'
+  },
+  c8: {
+    home: 'Ice Creams',
+    away: 'Takins'
+  },
+  c9: {
+    home: 'Albatrosses',
+    away: 'Lasers'
+  },
+  c10: {
+    home: 'Avatars',
+    away: 'Fireballs'
+  },
+  c11: {
+    home: 'Kangaroos',
+    away: 'Ice Creams'
+  },
+  c12: {
+    home: 'Jazz Magnets',
+    away: 'Wayfarers'
+  },
+  c13: {
+    home: 'Albatrosses',
+    away: 'Fireballs'
+  },
+  c14: {
+    home: 'Kangaroos',
+    away: 'Jazz Magnets',
+  },
+  c15: {
+    home: 'Fireballs',
+    away: 'Jazz Magnets',
   }
-];
+};

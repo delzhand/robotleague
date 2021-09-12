@@ -1,16 +1,16 @@
 function generate() {
-  $('body').append('<div id="player-gen"></div>');
-  for(let i = 0; i < p.length; i++) {
-    const x = `'${p[i][0].replace('\'', '\\\'')}': {
-      stability: ${getRandomInt(5)+1},
-      accuracy: ${getRandomInt(5)+1},
-      speed: ${getRandomInt(5)+1},
-      jump: ${getRandomInt(5)+1},
-      team: '${p[i][1].replace('\'', '\\\'')}',
-      initials: ''
-    },<br/>`;
-    $('#player-gen').append(x);
+  const league = {};
+  for (let i = 0; i < p.length; i++) {
+    let team = p[i][1].trim();
+    if (!league[team]) {
+      league[team] = {name: team, shortName: team, players: []};
+    }
+    const player = players[p[i][0]];
+    player.name = p[i][0].trim();
+    delete player.team;
+    league[team].players.push(player);
   }
+  console.log(JSON.stringify(league));
 }
 
 const p = [
@@ -19,12 +19,12 @@ const p = [
 ['Leuchtturm Hans', 'Western Deluge Wayfarers'],
 ['Hazard Kraken', 'Western Deluge Wayfarers'],
 ['Duster Catapult', 'Western Deluge Wayfarers'],
-['Sagarmāthā 1 ', 'Himalayan Convergent Takins'],
+['Sagarmāthā 1', 'Himalayan Convergent Takins'],
 ['Sword of Kathmandu', 'Himalayan Convergent Takins'],
 ['Chinde Duk', 'Himalayan Convergent Takins'],
-['Celestial Ascendant ', 'Himalayan Convergent Takins'],
+['Celestial Ascendant', 'Himalayan Convergent Takins'],
 ['Buzkashi Mare', 'Himalayan Convergent Takins'],
-['U-wetatso ', 'Adaptive Prototype Wavelengths'],
+['U-wetatso', 'Adaptive Prototype Wavelengths'],
 ['Tsa-huro', 'Adaptive Prototype Wavelengths'],
 ['Mosadatsi', 'Adaptive Prototype Wavelengths'],
 ['Sha-ea', 'Adaptive Prototype Wavelengths'],
@@ -96,14 +96,14 @@ const p = [
 ['Core Dump', 'Hyperion Meridian Irregulars'],
 ['Ikaruga Tribute', 'Orion\'s Belt Giants'],
 ['Dueling Drum', 'Orion\'s Belt Giants'],
-['Siege ', 'Orion\'s Belt Giants'],
+['Siege', 'Orion\'s Belt Giants'],
 ['Kurofuyu', 'Orion\'s Belt Giants'],
 ['Organix', 'Orion\'s Belt Giants'],
 ['Drissilith', 'Republic of Kerberos Pirates'],
 ['Titan Ant Cordyceps', 'Republic of Kerberos Pirates'],
 ['Mighty Tortuga', 'Republic of Kerberos Pirates'],
 ['Atomic Sarcosuchus', 'Republic of Kerberos Pirates'],
-['Mother Anemone ', 'Republic of Kerberos Pirates'],
+['Mother Anemone', 'Republic of Kerberos Pirates'],
 ['Rustbucket', 'Freelance Fold-Space Falcons'],
 ['Longhaul', 'Freelance Fold-Space Falcons'],
 ['Rollcage', 'Freelance Fold-Space Falcons'],
@@ -135,7 +135,7 @@ const p = [
 ['Approaching Infinity', 'Crab Nebula Functions'],
 ['Graphpaper Graffito', 'Crab Nebula Functions'],
 ['Geroy Zamka', 'Lib-Com Transient Albatrosses'],
-['Disco Cabinet ', 'Lib-Com Transient Albatrosses'],
+['Disco Cabinet', 'Lib-Com Transient Albatrosses'],
 ['Fearless Bogatyr', 'Lib-Com Transient Albatrosses'],
 ['Out and About', 'Lib-Com Transient Albatrosses'],
 ['Full Spectrum Jacket', 'Lib-Com Transient Albatrosses'],
@@ -171,12 +171,12 @@ const players = {
   'Leuchtturm Hans': {stability: 4, accuracy: 3, speed: 3, jump: 5, team: 'Western Deluge Wayfarers', initials: 'HAN'},
   'Hazard Kraken': {stability: 5, accuracy: 1, speed: 4, jump: 5, team: 'Western Deluge Wayfarers', initials: 'HAZ'},
   'Duster Catapult': {stability: 2, accuracy: 1, speed: 4, jump: 4, team: 'Western Deluge Wayfarers', initials: 'DC'},
-  'Sagarmāthā 1 ': {stability: 4, accuracy: 4, speed: 3, jump: 1, team: 'Himalayan Convergent Takins', initials: 'SG1'},
+  'Sagarmāthā 1': {stability: 4, accuracy: 4, speed: 3, jump: 1, team: 'Himalayan Convergent Takins', initials: 'SG1'},
   'Sword of Kathmandu': {stability: 3, accuracy: 4, speed: 1, jump: 3, team: 'Himalayan Convergent Takins', initials: 'SK'},
   'Chinde Duk': {stability: 2, accuracy: 5, speed: 1, jump: 4, team: 'Himalayan Convergent Takins', initials: 'DUK'},
-  'Celestial Ascendant ': {stability: 4, accuracy: 5, speed: 3, jump: 4, team: 'Himalayan Convergent Takins', initials: 'ASC'},
+  'Celestial Ascendant': {stability: 4, accuracy: 5, speed: 3, jump: 4, team: 'Himalayan Convergent Takins', initials: 'ASC'},
   'Buzkashi Mare': {stability: 2, accuracy: 3, speed: 4, jump: 3, team: 'Himalayan Convergent Takins', initials: 'BUZ'},
-  'U-wetatso ': {stability: 2, accuracy: 2, speed: 3, jump: 1, team: 'Adaptive Prototype Wavelengths', initials: 'UWT'},
+  'U-wetatso': {stability: 2, accuracy: 2, speed: 3, jump: 1, team: 'Adaptive Prototype Wavelengths', initials: 'UWT'},
   'Tsa-huro': {stability: 2, accuracy: 3, speed: 3, jump: 4, team: 'Adaptive Prototype Wavelengths', initials: 'TSA'},
   'Mosadatsi': {stability: 4, accuracy: 5, speed: 1, jump: 5, team: 'Adaptive Prototype Wavelengths', initials: 'MOS'},
   'Sha-ea': {stability: 5, accuracy: 3, speed: 3, jump: 1, team: 'Adaptive Prototype Wavelengths', initials: 'SHA'},
@@ -248,14 +248,14 @@ const players = {
   'Core Dump': {stability: 2, accuracy: 4, speed: 5, jump: 3, team: 'Hyperion Meridian Irregulars', initials: 'CD'},
   'Ikaruga Tribute': {stability: 5, accuracy: 1, speed: 4, jump: 1, team: 'Orion\'s Belt Giants', initials: 'IKA'},
   'Dueling Drum': {stability: 1, accuracy: 4, speed: 5, jump: 1, team: 'Orion\'s Belt Giants', initials: 'DD'},
-  'Siege ': {stability: 2, accuracy: 4, speed: 4, jump: 2, team: 'Orion\'s Belt Giants', initials: 'SGE'},
+  'Siege': {stability: 2, accuracy: 4, speed: 4, jump: 2, team: 'Orion\'s Belt Giants', initials: 'SGE'},
   'Kurofuyu': {stability: 4, accuracy: 2, speed: 5, jump: 2, team: 'Orion\'s Belt Giants', initials: 'KFU'},
   'Organix': {stability: 5, accuracy: 1, speed: 4, jump: 5, team: 'Orion\'s Belt Giants', initials: 'OGX'},
   'Drissilith': {stability: 4, accuracy: 2, speed: 2, jump: 2, team: 'Republic of Kerberos Pirates', initials: 'DRS'},
   'Titan Ant Cordyceps': {stability: 2, accuracy: 2, speed: 2, jump: 2, team: 'Republic of Kerberos Pirates', initials: 'TAC'},
   'Mighty Tortuga': {stability: 3, accuracy: 4, speed: 5, jump: 2, team: 'Republic of Kerberos Pirates', initials: 'MT'},
   'Atomic Sarcosuchus': {stability: 5, accuracy: 3, speed: 4, jump: 5, team: 'Republic of Kerberos Pirates', initials: 'SRC'},
-  'Mother Anemone ': {stability: 2, accuracy: 5, speed: 1, jump: 3, team: 'Republic of Kerberos Pirates', initials: 'ANM'},
+  'Mother Anemone': {stability: 2, accuracy: 5, speed: 1, jump: 3, team: 'Republic of Kerberos Pirates', initials: 'ANM'},
   'Rustbucket': {stability: 3, accuracy: 2, speed: 1, jump: 2, team: 'Freelance Fold-Space Falcons', initials: 'RB'},
   'Longhaul': {stability: 2, accuracy: 3, speed: 1, jump: 2, team: 'Freelance Fold-Space Falcons', initials: 'LH'},
   'Rollcage': {stability: 4, accuracy: 5, speed: 4, jump: 4, team: 'Freelance Fold-Space Falcons', initials: 'RC'},
@@ -287,7 +287,7 @@ const players = {
   'Approaching Infinity': {stability: 1, accuracy: 3, speed: 5, jump: 2, team: 'Crab Nebula Functions', initials: 'INF'},
   'Graphpaper Graffito': {stability: 4, accuracy: 1, speed: 3, jump: 3, team: 'Crab Nebula Functions', initials: 'GG'},
   'Geroy Zamka': { stability: 3, accuracy: 4, speed: 4, jump: 5, team: 'Lib-Com Transient Albatrosses', initials: 'GER' },
-  'Disco Cabinet ': { stability: 1, accuracy: 5, speed: 1, jump: 5, team: 'Lib-Com Transient Albatrosses', initials: 'DIS' },
+  'Disco Cabinet': { stability: 1, accuracy: 5, speed: 1, jump: 5, team: 'Lib-Com Transient Albatrosses', initials: 'DIS' },
   'Fearless Bogatyr': { stability: 5, accuracy: 2, speed: 3, jump: 3, team: 'Lib-Com Transient Albatrosses', initials: 'BOG' },
   'Out and About': { stability: 2, accuracy: 2, speed: 3, jump: 5, team: 'Lib-Com Transient Albatrosses', initials: 'OUT' },
   'Full Spectrum Jacket': { stability: 4, accuracy: 5, speed: 5, jump: 2, team: 'Lib-Com Transient Albatrosses', initials: 'FSJ' },
@@ -317,3 +317,5 @@ const players = {
   'Wight Wail': { stability: 4, accuracy: 3, speed: 3, jump: 3, team: 'Pthasperang Senior Quanqos', initials: 'WW' },
   'Aura Conduit Parthi': { stability: 2, accuracy: 3, speed: 1, jump: 4, team: 'Pthasperang Senior Quanqos', initials: 'ACP' },
 };
+
+generate();
