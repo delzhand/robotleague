@@ -58,8 +58,7 @@ body {
 .player-icon .robot {
   transform: 
     perspective(14cm)
-    rotateX(-25deg)
-    /* scale(1.5) */
+    rotateX(-50deg)
   ;
   transform-origin: bottom center;
   position: absolute;
