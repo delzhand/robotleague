@@ -22,7 +22,6 @@ body {
 }
 
 .new-field {
-  margin-top: 70px;
   background: rgb(65, 90, 74);
   height: 200px;
   width: 100%;
@@ -36,6 +35,13 @@ body {
 .field-depth {
   background-color: rgb(80, 60, 42);
   height: 20px;
+  transform: perspective(14cm) rotateX(-25deg);
+}
+.new-field,
+.field-depth {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .player-icon {
@@ -258,6 +264,7 @@ body {
   height: 14px;
   width: 8px;
   margin-right: 3px;
+  transform: skewX(-15deg);
 }
 .field-player .stats .stat .unfilled {
   background-color: transparent;

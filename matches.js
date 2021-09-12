@@ -4,9 +4,9 @@ const matches = {
     away: 'Fireballs',
   },
   1: {
+    seed: 'ttt',
     home: 'Wayfarers',
     away: 'Fireballs',
-    update: 2
   },
   c5: {
     home: 'Kangaroos',

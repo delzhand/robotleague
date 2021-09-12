@@ -27,7 +27,7 @@
   let interval = null;
 
   const game = {
-    rand: input.randomSeed ? new Math.seedrandom(input.randomSeed) : new Math.seedrandom(' '),
+    rand: input.seed ? new Math.seedrandom(input.seed) : new Math.seedrandom(' '),
     round: 1,
     phase: 'tossUp',
     rounds: input.rounds ? input.rounds: 5,
@@ -51,7 +51,7 @@
   function play() {
     $('.controls .pause').show();
     $('.controls .play').hide();
-    interval = setInterval(incrementTimer, 100);
+    interval = setInterval(incrementTimer, 70);
   }
 
   function pause() {
