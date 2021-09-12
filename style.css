@@ -240,9 +240,6 @@ body {
 .field-player:hover .stats {
   height: 108px;
 }
-.field-player .stats .stat {
-  color: gold;
-}
 .field-player .stats .stat:first-of-type {
   margin-top: 6px;
 }
@@ -254,9 +251,17 @@ body {
   height: 22px;
   text-align: center;
 }
+.field-player .stats .stat .bar {
+  background-color: #FFF;
+  border: 1px solid gold;
+  display: inline-block;
+  height: 14px;
+  width: 8px;
+  margin-right: 3px;
+}
 .field-player .stats .stat .unfilled {
-  color: #FFF;
-  opacity: .25;
+  background-color: transparent;
+  border: 1px solid #666;
 }
 
 .has-ball .field-player .flag {

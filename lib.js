@@ -79,10 +79,10 @@ function drawStat(count) {
   let output = '';
   for(let i = 0; i < 6; i++) {
     if (i < count) {
-      output += '◆';
+      output += '<span class="filled bar"></span>';
     }
     else {
-      output += '<span class="unfilled">◇</span>';
+      output += '<span class="unfilled bar"></span>';
     }
   }
   return output;

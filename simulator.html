@@ -450,6 +450,11 @@
           updatePosition(unit);
           updatePosition(sub);
         }
+        else if (unit.team === 'home' && !game.homeSub) {
+          unit.position = 0;
+          unit.out = 100000;
+          logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. No sub allowed.`);
+        }
         else if (unit.team === 'away' && game.awaySub) {
           game.awaySub = false;
           const sub = game.awayReserve[0];
@@ -461,17 +466,9 @@
           updatePosition(unit);
           updatePosition(sub);
         }
-        else {
-          if (unit.team === 'home') {
-            // game.homeReserve.push(unit);
-            // const teamPosition = game.homeTeam.indexOf(unit);
-            // delete(game.homeTeam[teamPosition]);
-          }
-          else {
-            // game.awayReserve.push(unit);
-            // const teamPosition = game.awayTeam.indexOf(unit);
-            // delete(game.awayTeam[teamPosition]);
-          }
+        else if (unit.team === 'away' && !game.awaySub) {
+          unit.position = 0;
+          unit.out = 100000;
           logMessage(`<b class="${unit.team}">${unit.name}</b> is disabled. No sub allowed.`);
         }
       }
