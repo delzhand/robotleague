@@ -9,6 +9,8 @@ const league = {
   "Wayfarers":{
      "name":"Western Deluge Wayfarers",
      "shortName":"Wayfarers",
+     "color1": '#3bc1ff',
+     "color2": '#64bd0e',
      "players":[
         {
            "stability":5,
@@ -55,6 +57,8 @@ const league = {
   "Takins":{
      "name":"Himalayan Convergent Takins",
      "shortName":"Takins",
+     "color1": '#c79070',
+     "color2": '#694b2d',
      "players":[
         {
            "stability":4,
@@ -101,6 +105,8 @@ const league = {
   "Wavelengths":{
      "name":"Adaptive Prototype Wavelengths",
      "shortName":"Wavelengths",
+     "color1": "#494949",
+     "color2": "#23fbff",
      "players":[
         {
            "stability":2,
@@ -147,6 +153,8 @@ const league = {
   "Rovers":{
      "name":"Jezero Crater Rovers",
      "shortName":"Rovers",
+     "color1": "#f2d06d",
+     "color2": "#32a686",
      "players":[
         {
            "stability":3,
@@ -193,6 +201,8 @@ const league = {
   "Lovers":{
      "name":"Lakshmi Planum Lovers",
      "shortName":"Lovers",
+     "color1": "#a64d79",
+     "color2": "#ff92ba",
      "players":[
         {
            "stability":1,
@@ -239,6 +249,8 @@ const league = {
   "Jazz Magnets":{
      "name":"Neptune Jazz Magnets",
      "shortName":"Jazz Magnets",
+     "color1": "#401d1d",
+     "color2": "#528eff",
      "players":[
         {
            "stability":3,
@@ -285,6 +297,8 @@ const league = {
   "Lasers":{
      "name":"Witch Heartbreak Lasers",
      "shortName":"Lasers",
+     "color1": "#ff2ccf",
+     "color2": "#23fbff",
      "players":[
         {
            "stability":5,
@@ -331,6 +345,8 @@ const league = {
   "Kangaroos":{
      "name":"Lunar Jump-Point Kangaroos",
      "shortName":"Kangaroos",
+     "color1": "#F2956D",
+     "color2": "#2933A6",
      "players":[
         {
            "stability":5,
@@ -377,6 +393,8 @@ const league = {
   "Machines":{
      "name":"Pan-Void Extranational Machines",
      "shortName":"Machines",
+     "color1": "#4B63A6",
+     "color2": "#6188F2",
      "players":[
         {
            "stability":4,
@@ -423,6 +441,8 @@ const league = {
   "Fireballs":{
      "name":"Big Hawaii Fireballs",
      "shortName":"Fireballs",
+     "color1": "#c3251a",
+     "color2": "#c5830a",
      "players":[
         {
            "stability":3,
@@ -469,6 +489,8 @@ const league = {
   "Humpbacks":{
      "name":"Wild Greenland Humpbacks",
      "shortName":"Humpbacks",
+     "color1": "#52acec",
+     "color2": "#6d4e2f",
      "players":[
         {
            "stability":2,
@@ -515,6 +537,8 @@ const league = {
   "Cosmic Violets":{
      "name":"Al-Muštarī Cosmic Violets",
      "shortName":"Cosmic Violets",
+     "color1": "#750071",
+     "color2": "#F500ED",
      "players":[
         {
            "stability":3,
@@ -561,6 +585,8 @@ const league = {
   "Tigers":{
      "name":"Renewed Korea Tigers",
      "shortName":"Tigers",
+     "color1": "#CD2E3A",
+     "color2": "#0047A0",
      "players":[
         {
            "stability":5,
@@ -607,6 +633,8 @@ const league = {
   "Vampires":{
      "name":"Brass Knuckle Vampires",
      "shortName":"Vampires",
+     "color1": "#222222",
+     "color2": "#EE3333",
      "players":[
         {
            "stability":3,
@@ -653,6 +681,8 @@ const league = {
   "Imps":{
      "name":"Devil's Corkscrew Imps",
      "shortName":"Imps",
+     "color1": "#a5990e",
+     "color2": "#41385d",
      "players":[
         {
            "stability":2,
@@ -699,6 +729,8 @@ const league = {
   "Irregulars":{
      "name":"Hyperion Meridian Irregulars",
      "shortName":"Irregulars",
+     "color1": "#39ce3d",
+     "color2": "#272727",
      "players":[
         {
            "stability":3,
@@ -745,6 +777,8 @@ const league = {
   "Giants":{
      "name":"Orion's Belt Giants",
      "shortName":"Giants",
+     "color1": "#312d48",
+     "color2": "#0f174c",
      "players":[
         {
            "stability":5,
@@ -791,6 +825,8 @@ const league = {
   "Pirates":{
      "name":"Republic of Kerberos Pirates",
      "shortName":"Pirates",
+     "color1": "#903939",
+     "color2": "#bd2395",
      "players":[
         {
            "stability":4,
@@ -837,6 +873,8 @@ const league = {
   "Falcons":{
      "name":"Freelance Fold-Space Falcons",
      "shortName":"Falcons",
+     "color1": "#4d946c",
+     "color2": "#113c1a",
      "players":[
         {
            "stability":3,
@@ -883,6 +921,8 @@ const league = {
   "Tornadoes":{
      "name":"Olympus Mons Tornadoes",
      "shortName":"Tornadoes",
+     "color1": "#7d1414",
+     "color2": "#ff3636",
      "players":[
         {
            "stability":1,
@@ -929,6 +969,8 @@ const league = {
   "Bonfires":{
      "name":"Akaheru Bonfires",
      "shortName":"Bonfires",
+     "color1": "#FF0000",
+     "color2": "#FFFFFF",
      "players":[
         {
            "stability":2,
@@ -975,6 +1017,8 @@ const league = {
   "Avatars":{
      "name":"Ancient Avalon Avatars",
      "shortName":"Avatars",
+     "color1": "#d8b125",
+     "color2": "#FFFFFF",
      "players":[
         {
            "stability":4,
@@ -1021,6 +1065,8 @@ const league = {
   "Chimeras":{
      "name":"Sirius Delta Outpost Chimeras",
      "shortName":"Chimeras",
+     "color1": "#ff4197",
+     "color2": "#fdc800",
      "players":[
         {
            "stability":4,
@@ -1067,6 +1113,8 @@ const league = {
   "Functions":{
      "name":"Crab Nebula Functions",
      "shortName":"Functions",
+     "color1": "#859624",
+     "color2": "#EB3625",
      "players":[
         {
            "stability":5,
@@ -1113,6 +1161,8 @@ const league = {
   "Albatrosses":{
      "name":"Lib-Com Transient Albatrosses",
      "shortName":"Albatrosses",
+     "color1": "#292929",
+     "color2": "#dccb00",
      "players":[
         {
            "stability":3,
@@ -1159,6 +1209,8 @@ const league = {
   "Dragons":{
      "name":"Zhong-Rossíyskoy Compact Dragons",
      "shortName":"Dragons",
+     "color1": "#335fff",
+     "color2": "#d4cbaa",
      "players":[
         {
            "stability":1,
@@ -1205,6 +1257,8 @@ const league = {
   "Ice Creams":{
      "name":"Exodian Ice Creams",
      "shortName":"Ice Creams",
+     "color1": "#f1e7c2",
+     "color2": "#de8dd8",
      "players":[
         {
            "stability":3,
@@ -1251,6 +1305,8 @@ const league = {
   "Lobsters":{
      "name":"Habitat Scouting Lobsters",
      "shortName":"Lobsters",
+     "color1": "#ff3c3c",
+     "color2": "#6c516f",
      "players":[
         {
            "stability":2,
@@ -1297,6 +1353,8 @@ const league = {
   "Spirals":{
      "name":"New Zion Spirals",
      "shortName":"Spirals",
+     "color1": "#e29200",
+     "color2": "#462700",
      "players":[
         {
            "stability":5,
@@ -1343,6 +1401,8 @@ const league = {
   "Quanqos":{
      "name":"Pthasperang Senior Quanqos",
      "shortName":"Quanqos",
+     "color1": "#7b7b7b",
+     "color2": "#0019cc",
      "players":[
         {
            "stability":2,

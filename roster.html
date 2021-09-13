@@ -19,8 +19,11 @@
   
     for (const [key, team] of Object.entries(league)) {
       const css = `team-${key.safeCSS()}`;
-      $('.container').append(`<div class="team ${css}"><div class="team-name"></div><div class="team-players"></div></div>`)
-  
+      $('.container').append(`<div class="team ${css}"></div>`)
+      $(`.${css}`).append(`<div class="team-name" style="background-color: ${team.color1};"><span class="inner"></span></div>`);
+      $(`.${css} .team-name`).append(`<div class="slash" style="background-color: ${team.color2};"></div>`);
+      $(`.${css}`).append(`<div class="team-players"></div>`);
+
       let stars = 0;
       for (let i = 0; i < team.players.length; i++) {
         let unit = team.players[i];
@@ -28,7 +31,7 @@
         stars += unit.stability + unit.speed + unit.accuracy + unit.jump;
       }
   
-      $(`.${css} .team-name`).html(`${team.name} - ${stars}◆`);
+      $(`.${css} .team-name .inner`).html(`${team.name} - ${stars}◆`);
     }
   }
 

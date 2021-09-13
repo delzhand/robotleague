@@ -36,7 +36,6 @@ body {
   transform: perspective(14cm) rotateX(25deg);
   border-top: 3px solid #FFF;
   border-bottom: 3px solid #FFF;
-  transform-style: inherit;
 }
 .field-depth {
   background-color: rgb(80, 60, 42);
@@ -60,12 +59,12 @@ body {
   transform: 
     perspective(14cm)
     rotateX(-50deg)
+    scale(125%)
   ;
   transform-origin: bottom center;
   position: absolute;
   bottom: 0;
   left: 0;
-  zoom: 125%;
 }
 .player-icon .robot .graphic {
   height: 33px;
@@ -468,6 +467,9 @@ b.skimmer {
   background-image: url('./ff.svg');
 }
 
+#roster {
+  max-width: 720px;
+}
 #roster .team-name {
   background: #666;
   color: #FFF;
@@ -476,6 +478,20 @@ b.skimmer {
   padding: 4px 6px 2px;
   font-size: 18px;
   border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+#roster .team-name .inner {
+  text-shadow: 2px 2px 0 #000
+}
+#roster .team-name .slash {
+  height: 100%;
+  width: 30%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: skewX(-40deg);
+  transform-origin: bottom;
 }
 #roster .team-players {
   margin: 10px 0;
@@ -493,7 +509,12 @@ b.skimmer {
 }
 #roster .team-players .flag {
   background: #666;
+  border: 1px solid #666;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 #roster .team-players .stats {
   height: 108px;
+  width: 100%;
+  left: 0;
 }
