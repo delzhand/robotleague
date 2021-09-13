@@ -36,6 +36,7 @@ body {
   transform: perspective(14cm) rotateX(25deg);
   border-top: 3px solid #FFF;
   border-bottom: 3px solid #FFF;
+  transform-style: inherit;
 }
 .field-depth {
   background-color: rgb(80, 60, 42);
