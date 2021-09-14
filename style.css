@@ -523,6 +523,7 @@ b.skimmer {
   right: 0px;
   padding: 4px 6px 2px;
   background-color: green;
+  z-index: 2;
 }
 
 #timer {
