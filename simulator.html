@@ -237,7 +237,7 @@
   }
 
   function scramble() {
-    $('.round').html(`${phaseText()} - Scramble`);
+    $('.phase').html(`${phaseText()} - Scramble`);
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
@@ -321,11 +321,11 @@
   }
 
   function rumble() {
-    $('.round').html(`${phaseText()} - Rumble`);
+    $('.phase').html(`${phaseText()} - Rumble`);
   }
 
   function shootout() {
-    $('.round').html(`${phaseText()} - Shootout`);
+    $('.phase').html(`${phaseText()} - Shootout`);
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
@@ -587,7 +587,7 @@
 
   function gameOver() {
     clearInterval(interval);
-    $('.round').html('Post-game');
+    $('.phase').html('Post-game');
     $('#progress').slideToggle();
     $('#output').addClass("done");
     if (game.homeScore > game.awayScore) {

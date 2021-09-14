@@ -16,7 +16,6 @@ body {
   display: inline-block;
   font-size: 12px;
   width: 130px;
-  overflow: hidden;
   border-left: 10px solid #000;
   /* border-right: 2px solid #000; */
   cursor: default;
@@ -35,12 +34,19 @@ body {
   margin-bottom: -4px;
   display: block;
 }
-.field-player2:hover .player-name .short,
 .field-player2 .player-name .full{
   display: none;
 }
 .field-player2:hover .player-name .full {
   display: block;
+  position: absolute;
+  top: 1px;
+  left: 0;
+  padding: 12px 6px 9px;
+  background: rgb(33,33,33);
+  white-space: nowrap;
+  z-index: 2;
+  line-height: 0;
 }
 .field-player2 .stats {
   background: rgb(33,33,33);
@@ -107,8 +113,15 @@ body {
   display: flex;
   position: relative;
   z-index: 5;
-  justify-content: center;
+  justify-content: left;
   align-content: flex-start;
+  overflow-x: scroll;
+}
+@media (min-width: 720px) {
+  .sideline {
+    overflow-x: visible;
+    justify-content: center;
+  }
 }
 .sideline > div {
   margin-left: 3px;
