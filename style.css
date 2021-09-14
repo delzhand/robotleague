@@ -459,13 +459,15 @@ body {
   margin-top: 10px;
   margin-bottom: 10px;
   padding-top: 7px;
-  border-radius: 5px;
-  font-size: 42px;
+  font-size: 38px;
+  padding-left: 6px;
+  padding-right: 6px;
   font-weight: bold;
   background: #666;
   color: #FFF;
   text-align: center;
   text-transform: uppercase;
+  box-shadow: 3px 3px 0 black;
 }
 #final-result.home {
   background: rgb(219, 69, 49);
