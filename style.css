@@ -36,6 +36,7 @@
   display: block;
   overflow: hidden;
   margin-top: 2px;
+  margin-bottom: 2px;
   padding-right: 10px;
   background: #333;
 }
