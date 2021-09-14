@@ -47,22 +47,23 @@ function findLeaguePlayer(name) {
   console.error(`Player ${name} not found.`);
 }
 
-function drawPlayer(unit) {
+function drawPlayer(unit, color1, color2) {
   const output = `
-    <div class="field-player ${unit.team}">
-      <div class="flag">
-        <div class="player-name">
-          <span class="short">${shortName(unit)}</span>
-          <span class="full">${unit.name}</span>
-        </div>
-      </div>
-      <div class="stats">
-        <div class="stat"><span class="label">J</span> ${drawStat(unit.jump)}</div>
-        <div class="stat"><span class="label">A</span> ${drawStat(unit.accuracy)}</div>
-        <div class="stat"><span class="label">M</span> ${drawStat(unit.speed)}</div>
-        <div class="stat"><span class="label">S</span> ${drawStat(unit.bStability ? unit.bStability : unit.stability)}</div>
-      </div>
-    </div>      
+  <div>
+  <div class="field-player2 ${unit.team}" style="border-top-color: ${color1}; border-bottom-color: ${color2};">
+    <div class="team-flag"></div>
+    <div class="player-name">
+      <span class="short">${shortName(unit)}</span>
+      <span class="full">${unit.name}</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="label"><span class="text">Jmp</span></span>${drawStat(unit.jump)}</div>
+      <div class="stat"><span class="label"><span class="text">Acc</span></span>${drawStat(unit.accuracy)}</div>
+      <div class="stat"><span class="label"><span class="text">Mov</span></span>${drawStat(unit.speed)}</div>
+      <div class="stat"><span class="label"><span class="text">Stb</span></span>${drawStat(unit.bStability ? unit.bStability : unit.stability)}</div>
+    </div>
+  </div>
+  </div>      
     `;
   return output;
 }

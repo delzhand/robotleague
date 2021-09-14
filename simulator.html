@@ -498,28 +498,28 @@
       if (game.homeStarters.indexOf(i) >= 0) {
         const unit = sortie(league[input.home].players[game.homeStarters[i]], 'home');
         game.homeTeam.push(unit);
-        $('.sideline.home').append(drawPlayer(unit));
+        $('.sideline.home').append(drawPlayer(unit, 'rgb(219, 69, 49)', 'rgb(219, 69, 49)'));
         $('.new-field .playzone').append(drawIcon(unit));
         updatePosition(unit);
       }
       if (game.homeSeconds.indexOf(i) >= 0) {
         const unit = sortie(league[input.home].players[game.homeSeconds[i - game.awayStarters.length]], 'home');
         game.homeReserve.push(unit);
-        $('.sideline.home').append(drawPlayer(unit));
+        $('.sideline.home').append(drawPlayer(unit, 'rgb(219, 69, 49)', 'rgb(219, 69, 49)'));
         $('.new-field .playzone').append(drawIcon(unit));
         updatePosition(unit);        
       }
       if (game.awayStarters.indexOf(i) >= 0) {
         const unit = sortie(league[input.away].players[game.awayStarters[i]], 'away')
         game.awayTeam.push(unit);
-        $('.sideline.away').append(drawPlayer(unit));
+        $('.sideline.away').append(drawPlayer(unit, 'rgb(49, 117, 219)', 'rgb(49, 117, 219)'));
         $('.new-field .playzone').append(drawIcon(unit));
         updatePosition(unit);
       }
       if (game.awaySeconds.indexOf(i) >= 0) {
         const unit = sortie(league[input.away].players[game.awaySeconds[i - game.awayStarters.length]], 'away');
         game.awayReserve.push(unit);
-        $('.sideline.away').append(drawPlayer(unit));
+        $('.sideline.away').append(drawPlayer(unit, 'rgb(49, 117, 219)', 'rgb(49, 117, 219)'));
         $('.new-field .playzone').append(drawIcon(unit));
         updatePosition(unit);        
       }

@@ -3,6 +3,85 @@
   to { background-position: -64px; }
 }
 
+.field-player2 {
+  border-radius: 10px;
+  background: rgb(33,33,33);
+  border-top: 10px solid #c3251a;
+  border-bottom: 10px solid #c5830a;
+  color: #FFF;
+  display: inline-block;
+  font-size: 12px;
+}
+.field-player2 .player-name {
+  font-weight: bold;
+  padding: 6px;
+  position: relative;
+  width: 100%;
+}
+.field-player2 .player-name .short,
+.field-player2 .player-name .full {
+  line-height: 1.2;
+  margin-top: -1px;
+  margin-bottom: -4px;
+  display: block;
+}
+.field-player2:hover .player-name .short,
+.field-player2 .player-name .full{
+  display: none;
+}
+.field-player2:hover .player-name .full {
+  display: block;
+}
+.field-player2 .stat {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  padding-right: 10px;
+  background: #333;
+}
+.field-player2 .stat .label {
+  background: #888;
+  padding: 2px 4px 0px;
+  display: inline-block;
+  transform: skewX(-20deg);
+  transform-origin: top;
+  margin-right: -5px;
+  width: 42px;
+}
+.field-player2 .stat .label .text {
+  transform: skewX(20deg);
+  display: inline-block;
+  padding-left: 6px;
+}
+.field-player2 .stat .bar {
+  height: 20px;
+  width: 10px;
+  display: inline-block;
+  margin-left: 2px;
+  vertical-align: bottom;
+  transform: skewX(-20deg);
+}
+.field-player2 .stat .filled {
+  background-color: rgb(196, 248, 255);
+  box-shadow:
+    0 0 4px rgb(89, 236, 255),
+    0 0 8px #fff;
+}
+.field-player2 .stat .bonus {
+  background-color: rgb(255, 239, 147);
+  box-shadow:
+    0 0 4px gold,
+    0 0 8px #fff;
+}
+.field-player2 .stat .penalty {
+  background-color: rgb(255, 95, 95);
+  box-shadow:
+    0 0 4px red,
+    0 0 8px #fff;
+}
+.field-player2 .stat .unfilled {
+  border: 1px solid #666;
+}
 body {
   overflow-x: hidden;
   background: url(bg.png);
@@ -484,6 +563,12 @@ b.skimmer {
 #roster .team-name .inner {
   text-shadow: 2px 2px 0 #000
 }
+#roster .team-name .inner .stars {
+  position: absolute;
+  top: 4px;
+  right: 20px;
+  z-index: 3;
+}
 #roster .team-name .slash {
   height: 100%;
   width: 30%;
@@ -494,20 +579,20 @@ b.skimmer {
   transform-origin: bottom;
 }
 #roster .team-players {
-  margin: 10px 0;
+  margin: 10px 0px 36px 0px;
   display: flex;
   position: relative;
   z-index: 5;
-  margin-bottom: 128px;
+  justify-content: space-between;
 }
 #roster .team-players > div {
-  display: flex;
+  /* display: flex;
   flex: 0 1 auto;
   flex-grow: 1;
   flex-shrink: 1;
-  flex-basis: 0;
+  flex-basis: 0; */
 }
-#roster .team-players .flag {
+/* #roster .team-players .flag {
   background: #666;
   border: 1px solid #666;
   border-bottom-left-radius: 0;
@@ -517,4 +602,4 @@ b.skimmer {
   height: 108px;
   width: 100%;
   left: 0;
-}
+} */
