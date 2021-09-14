@@ -50,7 +50,7 @@ function findLeaguePlayer(name) {
 function drawPlayer(unit, color1, color2) {
   const output = `
   <div>
-  <div class="field-player2 ${unit.team}" style="border-top-color: ${color1}; border-bottom-color: ${color2};">
+  <div class="field-player2 ${unit.team}" style="border-left-color: ${color1}; border-right-color: ${color2};">
     <div class="team-flag"></div>
     <div class="player-name">
       <span class="short">${shortName(unit)}</span>
@@ -69,7 +69,7 @@ function drawPlayer(unit, color1, color2) {
 }
 
 function shortName(unit) {
-  const maxLength = 17;
+  const maxLength = 16;
   if (unit.name.length > maxLength) {
     return unit.name.substr(0, maxLength - 3) + '...';
   }

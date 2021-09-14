@@ -57,8 +57,8 @@ const league = {
   "Takins":{
      "name":"Himalayan Convergent Takins",
      "shortName":"Takins",
-     "color1": '#c79070',
-     "color2": '#694b2d',
+     "color1": '#694b2d',
+     "color2": '#c79070',
      "players":[
         {
            "stability":4,
@@ -681,8 +681,8 @@ const league = {
   "Imps":{
      "name":"Devil's Corkscrew Imps",
      "shortName":"Imps",
-     "color1": "#a5990e",
-     "color2": "#41385d",
+     "color1": "#ffd400",
+     "color2": "#5d32e2",
      "players":[
         {
            "stability":2,
@@ -1065,7 +1065,7 @@ const league = {
   "Chimeras":{
      "name":"Sirius Delta Outpost Chimeras",
      "shortName":"Chimeras",
-     "color1": "#ff4197",
+     "color1": "#ff3333",
      "color2": "#fdc800",
      "players":[
         {
@@ -1210,7 +1210,7 @@ const league = {
      "name":"Zhong-Rossíyskoy Compact Dragons",
      "shortName":"Dragons",
      "color1": "#335fff",
-     "color2": "#d4cbaa",
+     "color2": "#d8c700",
      "players":[
         {
            "stability":1,
@@ -1257,8 +1257,8 @@ const league = {
   "Ice Creams":{
      "name":"Exodian Ice Creams",
      "shortName":"Ice Creams",
-     "color1": "#f1e7c2",
-     "color2": "#de8dd8",
+     "color1": "#de8dd8",
+     "color2": "#f1e7c2",
      "players":[
         {
            "stability":3,
@@ -1401,7 +1401,7 @@ const league = {
   "Quanqos":{
      "name":"Pthasperang Senior Quanqos",
      "shortName":"Quanqos",
-     "color1": "#7b7b7b",
+     "color1": "#67106d",
      "color2": "#0019cc",
      "players":[
         {

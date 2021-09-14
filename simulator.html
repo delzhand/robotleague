@@ -133,6 +133,8 @@
     else {
       $('#log').append(`<div>${m}</div>`);
     }
+    height = $('#log').innerHeight();
+    $('#output').css('height', height);
   }
 
   function sortie(unit, team) {
@@ -155,7 +157,7 @@
     return player;
   }
 
-  function roundText() {
+  function phaseText() {
     if (game.round > game.rounds) {
       return 'Sudden Death';
     }
@@ -178,7 +180,7 @@
   }
 
   function tossUp() {
-    $('.round').html(`${roundText()} - Toss Up`);
+    $('.phase').html(`${phaseText()} - Toss Up`);
     let bigBalls = game.bigBalls;
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
@@ -235,7 +237,7 @@
   }
 
   function scramble() {
-    $('.round').html(`${roundText()} - Scramble`);
+    $('.round').html(`${phaseText()} - Scramble`);
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
@@ -319,11 +321,11 @@
   }
 
   function rumble() {
-    $('.round').html(`${roundText()} - Rumble`);
+    $('.round').html(`${phaseText()} - Rumble`);
   }
 
   function shootout() {
-    $('.round').html(`${roundText()} - Shootout`);
+    $('.round').html(`${phaseText()} - Shootout`);
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
@@ -633,25 +635,22 @@
 
   <div class="sideline home"></div>
 
-  <div class="new-field">
-    <div class="playzone"></div>
-    <div class="endzone"><div class="team-paint">Home</div><div class="goalpost"></div></div>
-    <div class="endzone"><div class="team-paint">Away</div><div class="goalpost"></div></div>
+  <div class="field-wrapper">
+    <div class="new-field">
+      <div class="playzone"></div>
+      <div class="endzone"><div class="team-paint">Home</div><div class="goalpost"></div></div>
+      <div class="endzone"><div class="team-paint">Away</div><div class="goalpost"></div></div>
+    </div>
+    <div class="field-depth">
+      <div class="score-home">Home: <span class="home-score">0</span></div>
+      <div class="phase">Pre-game</div>
+      <div class="score-away">Away: <span class="away-score">0</span></div>
+    </div>
   </div>
-  <div class="field-depth"></div>
 
   <div class="sideline away"></div>
 
   <div id="final-result" style="display: none;"></div>
-
-  <div id="scoreboard" class="clearfix">
-    <div class="col col-xs-6">
-    </div>
-    <div class="col col-xs-6">
-      <div class="score">Home: <span class="home-score">0</span> | Away: <span class="away-score">0</span></div>
-      <div class="round">Pre-game</div>
-    </div>
-  </div>
 
   <div id="progress">
     <div class="controls">
