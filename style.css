@@ -145,8 +145,6 @@ body {
   transform-origin: bottom;
   transform-style: preserve-3d;
   transform: perspective(14cm) rotateX(25deg);
-  border-top: 3px solid #111;
-  border-bottom: 3px solid #111;
 }
 .field-depth {
   background-color: #111;
@@ -166,7 +164,7 @@ body {
 .score-away,
 .phase {
   position: absolute;
-  top: 0;
+  top: 2px;
   left: 6px;
   color: #FFF;
   font-weight: bold;
@@ -254,7 +252,7 @@ body {
   background: rgb(27, 177, 79);
 }
 .player-icon .stability.danger {
-  background: rgb(255, 239, 10);
+  background: rgb(206, 133, 0);
 }
 .player-icon .stability.critical {
   background: rgb(255, 10, 10);
@@ -298,7 +296,7 @@ body {
   top: auto;
   bottom: 0;
 }
-.marker-line.away::before {
+/* .marker-line.away::before {
   width: 1px;
   height: 146px;
   position: absolute;
@@ -306,11 +304,9 @@ body {
   bottom: 25px;
   background: #FFF;
   content: "";
-}
+} */
 .endzone {
   background: rgb(219, 69, 49);
-  border-right: 3px solid #111;
-  border-left: 3px solid #111;
   height: 100%;
   width: 10%;
   position: absolute;
@@ -331,13 +327,10 @@ body {
   position: absolute;
   top: 50%;
   height: 120px;
-  width: 30px;
+  width: 10px;
   background: gold;
-  border: 3px solid #111;
   right: 100%;
-  border-top-left-radius: 50%;
-  border-bottom-left-radius: 50%;
-  transform: translate(0, -50%);
+  transform: translate(100%, -50%);
 }
 .endzone:last-of-type {
   background: rgb(49, 117, 219);
@@ -350,9 +343,7 @@ body {
 .endzone:last-of-type .goalpost {
   right: auto;
   left: 100%;
-  border-radius: 0;
-  border-top-right-radius: 50%;
-  border-bottom-right-radius: 50%;
+  transform: translate(-100%, -50%);
 }
 
 .field-player {
