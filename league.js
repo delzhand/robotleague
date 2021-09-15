@@ -305,7 +305,7 @@ const league = {
            "accuracy":1,
            "speed":1,
            "jump":1,
-           "initials":"SE",
+           "initials":"SLF",
            "name":"Self Entitled"
         },
         {
@@ -361,7 +361,7 @@ const league = {
            "accuracy":3,
            "speed":4,
            "jump":5,
-           "initials":"DS",
+           "initials":"DRM",
            "name":"Dream Spirit"
         },
         {
@@ -369,7 +369,7 @@ const league = {
            "accuracy":2,
            "speed":4,
            "jump":3,
-           "initials":"TV",
+           "initials":"TAC",
            "name":"Tactic Vulcan"
         },
         {
@@ -377,7 +377,7 @@ const league = {
            "accuracy":2,
            "speed":3,
            "jump":5,
-           "initials":"GM",
+           "initials":"GRG",
            "name":"Gorgon Manticore"
         },
         {

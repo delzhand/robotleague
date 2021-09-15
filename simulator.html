@@ -149,12 +149,19 @@
       jump: unit.jump,
       speed: unit.speed,
       talent: unit.talent,
-      hasBall: false,
-      hasBigBall: false,
+      ball: -1,
       out: 0,
       position: 0,
     }
     return player;
+  }
+
+  function hasBall(unit) {
+    return unit.ball >= 0;
+  }
+
+  function hasBigBall(unit) {
+    return hasBall(unit) && unit.ball < game.bigBalls;
   }
 
   function phaseText() {
@@ -181,7 +188,7 @@
 
   function tossUp() {
     $('.phase').html(`${phaseText()} - Toss Up`);
-    let bigBalls = game.bigBalls;
+    // let bigBalls = game.bigBalls;
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
@@ -197,12 +204,12 @@
     for(let i = 0; i < game.balls; i++) {
       const unit = activePlayers[i];
       if (!unit.out) {
-        if (bigBalls > 0) {
-          bigBalls--;
-          gainBigBall(unit);
+        gainBall(unit, i);
+        if (i < game.bigBalls) {
+          logMessage(`<b class="${unit.team}">${unit.name}</b> grabs the <b class="sinker">sinker</b>.`);
         }
         else {
-          gainBall(unit);
+          logMessage(`<b class="${unit.team}">${unit.name}</b> grabs a <b class="skimmer">skimmer</b>.`);
         }
       }
     }
@@ -213,30 +220,37 @@
   }
 
   function loseBall(unit) {
-    unit.hasBall = false;
-    unit.hasBigBall = false;
+    unit.ball = -1;
     
-    $(`.player-${unit.name.safeCSS()}`).removeClass('has-ball');
-    $(`.player-${unit.name.safeCSS()}`).removeClass('has-big-ball');
+    $(`.player-${unit.name.safeCSS()}`).removeClass('skimmer');
+    $(`.player-${unit.name.safeCSS()}`).removeClass('sinker');
   }
 
-  function gainBall(unit) {
-    logMessage(`<b class="${unit.team}">${unit.name}</b> grabs a <b class="skimmer">skimmer</b>.`);
-    unit.hasBall = true;
-
-    $(`.player-${unit.name.safeCSS()}`).addClass('has-ball');
+  function gainBall(unit, ballIndex) {
+    unit.ball = ballIndex;
+    $player = $(`.player-${unit.name.safeCSS()}`);
+    $('.ball').eq(unit.ball).css({'top': $player.css('top'), 'left': $player.css('left')});
+    if (hasBigBall(unit)) {
+      $player.addClass('sinker');
+    }
+    else {
+      $player.addClass('skimmer');
+    }
   }
 
-  function gainBigBall(unit) {
-    logMessage(`<b class="${unit.team}">${unit.name}</b> grabs the <b class="sinker">sinker</b>.`);
-    unit.hasBall = true;
-    unit.hasBigBall = true;
+  // function gainBigBall(unit) {
+  //   logMessage(`<b class="${unit.team}">${unit.name}</b> grabs the <b class="sinker">sinker</b>.`);
+  //   unit.hasBall = true;
+  //   unit.hasBigBall = true;
 
-    $(`.player-${unit.name.safeCSS()}`).addClass('has-ball');
-    $(`.player-${unit.name.safeCSS()}`).addClass('has-big-ball');
-  }
+  //   $player = $(`.player-${unit.name.safeCSS()}`);
+  //   $player.addClass('has-ball');
+  //   $player.addClass('has-big-ball');
+  //   $(`.ball.sinker`).css({'top': $player.css('top'), 'left': $player.css('left')});
+  // }
 
   function scramble() {
+    $('.ball .inner').css('transform', 'scale(0)');
     $('.phase').html(`${phaseText()} - Scramble`);
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
@@ -251,14 +265,16 @@
   function move(unit) {
     const movement = getSuccesses(unit.speed, 3) + 1;
     unit.position += movement;
+
     if (unit.position >= game.fieldSize) {
       unit.position = 0;
       unit.out = 1;
-      if (unit.hasBigBall) {
+    
+      if (hasBigBall(unit)) {
         logMessage(`<b class="${unit.team}">${unit.name}</b> reached the endzone with the <b class="sinker">sinker</b>. Out for ${unit.out} rounds.`);
         updateScore(unit, 4);
       }
-      else if (unit.hasBall) {
+      else if (hasBall(unit)) {
         logMessage(`<b class="${unit.team}">${unit.name}</b> reached the endzone with a <b class="skimmer">skimmer</b>. Out for ${unit.out} rounds.`);
         updateScore(unit, 2);
       }
@@ -287,6 +303,7 @@
   }
 
   function updatePosition(unit) {
+    $player = $(`.player-${unit.name.safeCSS()}`);
     const posPercent = unit.position / game.fieldSize * 100;
     
     let realPercent = (unit.team === 'home') ? posPercent : 100 - posPercent;
@@ -302,7 +319,10 @@
     else {
       realPercent += 2;
     }
-    $(`.player-${unit.name.safeCSS()}`).css({top: y + '%', left: realPercent + '%', 'z-index': 100 + y});
+    $player.css({top: y + '%', left: realPercent + '%', 'z-index': 100 + y});
+    if (hasBall(unit)) {
+      $('.ball').eq(unit.ball).css({top: y + '%', left: realPercent + '%'});
+    }
   }
 
   function getLane(unit) {
@@ -326,10 +346,11 @@
 
   function shootout() {
     $('.phase').html(`${phaseText()} - Shootout`);
+    $('.ball .inner').css('transform', 'scale(1)');
     let allPlayers = shuffle(getAllPlayers());
     for(let i = 0; i < allPlayers.length; i++) {
       const unit = allPlayers[i];
-      if (!unit.out && unit.hasBall) {
+      if (!unit.out && hasBall(unit)) {
         shoot(unit);
       }
     }
@@ -360,7 +381,8 @@
     const target = targets[getRandomInt(targets.length)];
     const shot = makeShot(target.distance, unit.accuracy);
     if (target.type === 'goal') {
-      if (shot.success && unit.hasBigBall) {
+      goalShot(unit, shot.success);
+      if (shot.success && hasBigBall(unit)) {
         logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
         updateScore(unit, 5);
       }
@@ -368,7 +390,7 @@
         logMessage(`<b class="${unit.team}">${unit.name}</b> scores with the <b class="skimmer">skimmer</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
         updateScore(unit, 3);
       }
-      else if (unit.hasBigBall) {
+      else if (hasBigBall(unit)) {
         logMessage(`<b class="${unit.team}">${unit.name}</b> missed the goal with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
       }
       else {
@@ -376,7 +398,8 @@
       }
     }
     else {
-      if (shot.success && unit.hasBigBall) {
+      playerShot(unit, shot.success, target.unit);
+      if (shot.success && hasBigBall(unit)) {
         logMessage(`<b class="${unit.team}">${unit.name}</b> hits <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
         target.unit.cStability -= 2;
         if (target.unit.cStability <= 0) {
@@ -401,7 +424,7 @@
         }
         updatePosition(target.unit);
       }
-      else if (unit.hasBigBall) {
+      else if (hasBigBall(unit)) {
         logMessage(`<b class="${unit.team}">${unit.name}</b> missed <b class="${target.unit.team}">${target.unit.name}</b> with the <b class="sinker">sinker</b> (${Math.floor(shot.rate)}% | ${shot.r}).`);
       }
       else {
@@ -420,6 +443,30 @@
     hitRate *= 100;
     let r = getRandomInt(100);
     return {success: r <= hitRate, rate: hitRate, r};
+  }
+
+  function goalShot(unit, success) {
+    let y = 50;
+    if (!success) {
+      y += getCoinFlip() ? 25 : -25;
+    }
+    let x = (unit.team === 'home') ? '112%' : '-12%';
+    $('.ball').eq(unit.ball).css('top', y + '%').css('left', x);
+  }
+
+  function playerShot(unit, success, target) {
+    $player = $(`.player-${unit.name.safeCSS()}`);
+    $target = $(`.player-${target.name.safeCSS()}`);
+
+    let y = $target[0].style.top;
+    let x = $target[0].style.left;
+    if (!success) {
+      y += getCoinFlip() ? 25 : -25;
+      x += getCoinFlip() ? 25 : -25;
+    }
+    if (hasBall(unit)) {
+      $('.ball').eq(unit.ball).css('top', y).css('left', x);
+    }
   }
 
   function checkOuts() {
@@ -627,53 +674,61 @@
   }
 
 </script>
-<title>Titan League Blastball | Match Visualizer</title>
+<title>Titan League Crashball | Match Visualizer</title>
 </head>
 <body>
 
 <div class="container">
 
-  <div class="sideline home"></div>
-
-  <div class="field-wrapper">
-    <div class="new-field">
-      <div class="playzone"></div>
-      <div class="endzone"><div class="team-paint">Home</div><div class="goalpost"></div></div>
-      <div class="endzone"><div class="team-paint">Away</div><div class="goalpost"></div></div>
+  <div class="row">
+    <div class="col col-sm-8">
+      <div class="sideline home"></div>
+      <div class="field-wrapper">
+        <div class="new-field">
+          <div class="playzone">
+            <div style="position: absolute; top: 0; left: 0; height: 50%; width: 50%; background: rgba(0, 0, 0, .5)"></div>
+            <div style="position: absolute; bottom: 0; right: 0; height: 50%; width: 50%; background: rgba(0, 0, 0, .5)"></div>
+            <div class="ball sinker"><div class="inner"></div></div>
+            <div class="ball skimmer-1"><div class="inner"></div></div>
+            <div class="ball skimmer-2"><div class="inner"></div></div>
+          </div>
+          <div class="endzone"><div class="team-paint">Home</div><div class="goalpost"></div></div>
+          <div class="endzone"><div class="team-paint">Away</div><div class="goalpost"></div></div>
+        </div>
+        <div class="field-depth">
+          <div class="score-home">Home: <span class="home-score">0</span></div>
+          <div class="phase">Pre-game</div>
+          <div class="score-away">Away: <span class="away-score">0</span></div>
+        </div>
+      </div>
+      <div class="sideline away"></div>
+    
+      <div id="final-result" style="display: none;"></div>
     </div>
-    <div class="field-depth">
-      <div class="score-home">Home: <span class="home-score">0</span></div>
-      <div class="phase">Pre-game</div>
-      <div class="score-away">Away: <span class="away-score">0</span></div>
+    <div class="col col-sm-4">
+      <div id="progress">
+        <div class="controls">
+          <div class="play" onclick="play()"></div>
+          <div class="pause" onclick="pause()" style="display: none;"></div>
+        </div>
+      
+        <div id="timer">
+          <div class="inner" style="width: 0%;"></div>
+        </div>
+      
+        <div class="controls">
+          <div class="ff" onclick="fastforward()"></div>
+        </div>
+      </div>
+    
+    
+      <div id="output" class="log-frame">
+        <div class="log-label">Log</div>
+        <div id="log" class="log-inner"></div>
+      </div>    
+    
     </div>
   </div>
-
-  <div class="sideline away"></div>
-
-  <div id="final-result" style="display: none;"></div>
-
-  <div id="progress">
-    <div class="controls">
-      <div class="play" onclick="play()"></div>
-      <div class="pause" onclick="pause()" style="display: none;"></div>
-    </div>
-  
-    <div id="timer">
-      <div class="inner" style="width: 0%;"></div>
-    </div>
-  
-    <div class="controls">
-      <div class="ff" onclick="fastforward()"></div>
-    </div>
-  </div>
-
-
-  <div id="output" class="log-frame">
-    <div class="log-label">Log</div>
-    <div id="log" class="log-inner"></div>
-  </div>    
-
-  <div id="p"></div>
 </div>
 
 <script>

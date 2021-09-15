@@ -6,7 +6,6 @@
 body {
   overflow-x: hidden;
   background: url(bg.png);
-  background-position: center;
 }
 
 .field-player2 {
@@ -105,7 +104,6 @@ body {
 
 .container {
   font-family: 'Josefin Sans', sans-serif;
-  max-width: 720px !important;
 }
 
 .sideline {
@@ -257,40 +255,26 @@ body {
 .player-icon .stability.critical {
   background: rgb(255, 10, 10);
 }
-.player-icon.has-ball .arrow {
+.player-icon.skimmer .arrow {
   border: 10px solid rgb(228, 162, 39);
 }
-.player-icon.has-big-ball .arrow {
+.player-icon.sinker .arrow {
   border: 10px solid rgb(137, 39, 228);
 }
 
-.field-pointer {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 1;
-  transform-origin: top left;
-  width: 100%;
-  transform: 
-    translate(-14px, 0)
-    rotateZ(-90deg)
-    perspective(14cm)
-    rotateY(-25deg)
-    scaleX(.8)
-  ;
-  transition-duration: 1s;
-}
 .playzone {
   height: 100%;
   width: 80%;
   position: absolute;
   top: 0;
   left: 10%;
+  z-index: 2;
 }
 .marker-line {
   position: absolute;
   top: 0;
   color: #FFF;
+  transform: translate(-50%);
 }
 .marker-line.away {
   top: auto;
@@ -326,7 +310,7 @@ body {
 .goalpost { 
   position: absolute;
   top: 50%;
-  height: 120px;
+  height: 35px;
   width: 10px;
   background: gold;
   right: 100%;
@@ -484,6 +468,7 @@ b.skimmer {
   color: rgb(228, 162, 39);
 }
 #output {
+  margin-top: 10px;
   margin-bottom: 10px;
 }
 .log-frame {
@@ -541,7 +526,7 @@ b.skimmer {
 }
 
 #progress {
-  margin-top: 42px;
+  margin-top: 10px;
   margin-bottom: 2px;
   position: relative;
 }
@@ -620,20 +605,34 @@ b.skimmer {
 }
 #roster .team-players > div {
   margin-bottom: 10px;
-  /* display: flex;
-  flex: 0 1 auto;
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 0; */
 }
-/* #roster .team-players .flag {
-  background: #666;
-  border: 1px solid #666;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+
+.ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 0px;
+  width: 0px;
+  transition-duration: .25s;
 }
-#roster .team-players .stats {
-  height: 108px;
-  width: 100%;
-  left: 0;
-} */
+.ball .inner {
+  border-radius: 50%;
+  border: 6px solid rgb(228, 162, 39);
+  background-color: #FFF;
+  position: absolute;
+  left: -16px;
+  top: -16px;
+  height: 32px;
+  width: 32px;
+  transform: scale(1);
+  transition-duration: 0s;
+}
+.ball.sinker .inner{
+  border-color: rgb(137, 39, 228);
+}
+.ball.skimmer-1 {
+  top: 15%;
+}
+.ball.skimmer-2 {
+  top: 85%;
+}
